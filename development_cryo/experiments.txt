@@ -1,2 +1,0 @@
-index,pre_data,post_data,process,cpa
-experiment_1,Beispiel_data\Pre\EQ20220824A1-Pre1.txt,Beispiel_data\Post\EQ20220824-3c-LN2-4-4.txt,Beispiel_data\Prozess\Prozess1.txt,cpa_1

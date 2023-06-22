@@ -1,4 +1,0 @@
-{
-    "profile": "neo4j://ec2-18-185-80-27.eu-central-1.compute.amazonaws.com:7687",
-    "password": "test_ma"
-}
