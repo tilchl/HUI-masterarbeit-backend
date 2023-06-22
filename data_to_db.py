@@ -3,35 +3,20 @@ import json
 import pandas
 import time
 import copy
-from .load_pre_post_data import load_pp_data
-from .load_process import load_process_data
-from ...lib_save.json_to_neo import json_to_neo
+from lib_load import load_cryomicro_data, load_dsc_data, load_ftir_data, load_osmo_data, load_pp_data, load_process_data, load_visc_data, load_config_data
+from lib_save import json_to_neo_cpa, json_to_neo_cryo, json_to_neo_process, connect_to_db
+
+CONFIG_STRUC_CPA_PATH = 'conf\struc_cpa.json'
+CONFIG_STRUC_CRYO_PATH = 'conf\struc_cryo.json'
+CONFIG_STRUC_PROCESS_PATH = 'conf\struc_process.json'
+
+GRAPH_CRYO = connect_to_db('cryo')
+GRAPH_CPA = connect_to_db('cpa')
 
 
-class FeedOneExp:
-    def __init__(self, index, pre_data_path, post_data_path, process_path, cpa):
-        self.config_account_path = 'development_cryo/config/config_account.json'
-        self.config_cryo_db_path = 'development_cryo/config/config_cryo_db.json'
-        self.index = index
-        self.pre_data_path = pre_data_path
-        self.post_data_path = post_data_path
-        self.process_path = process_path
-        self.cpa = cpa
-        self.graph = self.connect_to_db()
-        self.config_data = self.load_config_data()
-
-    def connect_to_db(self):
-        with open(self.config_account_path, 'r') as f:
-            data = json.load(f)
-        graph = Graph(data['profile'], password=data['password'])
-        return graph
-
-    def load_config_data(self):
-        with open(self.config_cryo_db_path, 'r') as f:
-            data = json.load(f)
-        if data['PostData'] == '$PreData':
-            data['PostData'] = copy.deepcopy(data['PreData'])
-        return data
+class FeedIntoNeo4j:
+    def __init__(self, config_data, pre_path, post_path, cpa_index, process_index):
+        self.config_data = self.config_data
 
     def load_one_experiment(self):
         loaded_data = self.config_data
@@ -47,16 +32,6 @@ class FeedOneExp:
     def feed_to_neo4j(self):
         loaded_data = self.load_one_experiment()
         json_to_neo(self.graph, loaded_data, self.index)
-
-
-def get_continue_index(df, load_from):
-    if load_from == 'start':
-        return 0
-    else:
-        if len(df.index[df['index'] == load_from]) == 1:
-            return (df.index[df['index'] == load_from])[0]
-        else:
-            return 'OverflowError'
 
 
 def feed_all_exps(exps_log_path, load_from):
@@ -93,19 +68,8 @@ def feed_all_exps(exps_log_path, load_from):
 
         dur = time.perf_counter() - start
         print('')
-        print(f'\nEnd: overall time {dur:.2f}s, average time {overall_time/(i+1):.2f}s.\n')
-
-
-from py2neo import Graph
-import json
-import os
-import time
-from .load_dsc_data import load_dsc_data
-from .load_ftir_data import load_ftir_data
-from .load_cryomicro_data import load_cryomicro_data
-from .load_osmo_data import load_osmo_data
-from .load_visc_data import load_visc_data
-from ...lib_save.json_to_neo_cpa import json_to_neo
+        print(
+            f'\nEnd: overall time {dur:.2f}s, average time {overall_time/(i+1):.2f}s.\n')
 
 
 class FeedOneExp:
@@ -128,7 +92,7 @@ class FeedOneExp:
         with open(self.config_cryo_db_path, 'r') as f:
             data = json.load(f)
         return data
-    
+
     def get_paths(self):
         return {
             "dsc_path": f'{self.cpa_dir_path}/{self.cpa_index}/DSC/' + os.listdir(f'{self.cpa_dir_path}/{self.cpa_index}/DSC')[0],
@@ -168,7 +132,7 @@ def feed_all_exps(cpa_dir_path):
     for i, dir_name in enumerate(cpa_dirs):
         if i == 0:
             FeedOneExp(cpa_index=dir_name,
-                        cpa_dir_path=cpa_dir_path).feed_to_neo4j()
+                       cpa_dir_path=cpa_dir_path).feed_to_neo4j()
         # progress bar
         finish = '▓' * int((i+1)*(50/len(cpa_dirs)))
         need_do = '-' * (50-int((i+1)*(50/len(cpa_dirs))))
@@ -179,4 +143,5 @@ def feed_all_exps(cpa_dir_path):
 
     dur = time.perf_counter() - start
     print('')
-    print(f'\nEnd: overall time {dur:.2f}s, average time {overall_time/(i+1):.2f}s.\n')
+    print(
+        f'\nEnd: overall time {dur:.2f}s, average time {overall_time/(i+1):.2f}s.\n')

@@ -1,0 +1,25 @@
+{
+    "Center Node": {
+        "CPA ID": null
+    },
+    "DSC": {
+        "File ID": null,
+        "Curve": {
+            "Temp./\u00b0C": [],
+            "Time/min": [],
+            "DSC/(mW/mg)": [],
+            "Sensit./(uV/mW)": [],
+            "Segment": []
+        }
+    },
+    "FTIR": {
+        "File ID": null,
+        "Curve": {
+            "Wavenumber/cm^-1": [],
+            "Spectral intensity/A": []
+        }
+    },
+    "Cryomicroscopy": {},
+    "Osmolality": {},
+    "Viscosity": {}
+}
