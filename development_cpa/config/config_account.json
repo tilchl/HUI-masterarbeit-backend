@@ -1,0 +1,4 @@
+{
+    "profile": "neo4j://ec2-3-70-216-147.eu-central-1.compute.amazonaws.com:7687",
+    "password": "test_cpa"
+}
