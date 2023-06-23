@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 import urllib.parse
 from lib_save import connect_to_db
-from init_db import Check
+from lib_build import BuildDatabase, BuildDataStore
 
 app = FastAPI()
 
@@ -36,31 +36,31 @@ def freeQueryCpa(query):
 @app.get("/deleteDatabase/{db_id}")
 def deleteDatabase(db_id):
     if db_id == 'cryo':
-        Check(GRAPH_CRYO, 'cryo').delete_all()
+        BuildDatabase(GRAPH_CRYO, 'cryo').delete_all()
     elif db_id == 'cpa':
-        Check(GRAPH_CPA, 'cpa').delete_all()
+        BuildDatabase(GRAPH_CPA, 'cpa').delete_all()
     return f'SUCCESS: DATABASE {db_id} DELETED'
 
 @app.get("/initDatabase/{db_id}")
 def initDatabase(db_id):
     if db_id == 'cryo':
         deleteDatabase('cryo')
-        Check(GRAPH_CRYO, 'cryo').add_constraint()
+        BuildDatabase(GRAPH_CRYO, 'cryo').add_constraint()
     elif db_id == 'cpa':
         deleteDatabase('cpa')
-        Check(GRAPH_CPA, 'cpa').add_constraint()
+        BuildDatabase(GRAPH_CPA, 'cpa').add_constraint()
     return f'SUCCESS: DATABASE {db_id} INIT'
 
 @app.get("/connectDatabase/{db_id}")
 def initDatabase(db_id):
     if db_id == 'cryo':
-        return Check(GRAPH_CRYO, 'cryo').query_all()
+        return BuildDatabase(GRAPH_CRYO, 'cryo').query_all()
     elif db_id == 'cpa':
-        return Check(GRAPH_CPA, 'cpa').query_all()
+        return BuildDatabase(GRAPH_CPA, 'cpa').query_all()
     
 @app.get("/findIsolatedNodes/{db_id}")
 def findIsolatedNodes(db_id):
     if db_id == 'cryo':
-        return Check(GRAPH_CRYO, 'cryo').find_isolated_nodes()
+        return BuildDatabase(GRAPH_CRYO, 'cryo').find_isolated_nodes()
     elif db_id == 'cpa':
-        return Check(GRAPH_CPA, 'cpa').find_isolated_nodes()
+        return BuildDatabase(GRAPH_CPA, 'cpa').find_isolated_nodes()
