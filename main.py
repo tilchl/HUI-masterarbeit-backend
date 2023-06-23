@@ -33,26 +33,26 @@ def freeQueryCpa(query):
     query = urllib.parse.unquote(query)
     return GRAPH_CPA.run(query).data()
 
-@app.get("/deleteDatabase/{db_id}")
-def deleteDatabase(db_id):
+@app.get("/cleanDatabase/{db_id}")
+def cleanDatabase(db_id):
     if db_id == 'cryo':
         BuildDatabase(GRAPH_CRYO, 'cryo').delete_all()
     elif db_id == 'cpa':
         BuildDatabase(GRAPH_CPA, 'cpa').delete_all()
-    return f'SUCCESS: DATABASE {db_id} DELETED'
+    return f'SUCCESS: DATABASE {db_id} CLEANED'
 
 @app.get("/initDatabase/{db_id}")
 def initDatabase(db_id):
     if db_id == 'cryo':
-        deleteDatabase('cryo')
+        cleanDatabase('cryo')
         BuildDatabase(GRAPH_CRYO, 'cryo').add_constraint()
     elif db_id == 'cpa':
-        deleteDatabase('cpa')
+        cleanDatabase('cpa')
         BuildDatabase(GRAPH_CPA, 'cpa').add_constraint()
     return f'SUCCESS: DATABASE {db_id} INIT'
 
 @app.get("/connectDatabase/{db_id}")
-def initDatabase(db_id):
+def connectDatabase(db_id):
     if db_id == 'cryo':
         return BuildDatabase(GRAPH_CRYO, 'cryo').query_all()
     elif db_id == 'cpa':
@@ -64,3 +64,22 @@ def findIsolatedNodes(db_id):
         return BuildDatabase(GRAPH_CRYO, 'cryo').find_isolated_nodes()
     elif db_id == 'cpa':
         return BuildDatabase(GRAPH_CPA, 'cpa').find_isolated_nodes()
+    
+@app.get("/buildDataStore/{store_name}")
+def buildDataStore(store_name):
+    return BuildDataStore(store_name).create_data_store_folder()
+    
+@app.get("/deleteDataStore/{store_name}")
+def deleteDataStore(store_name):
+    return BuildDataStore(store_name).delete_folder()
+            
+    
+@app.get("/cleanLog/{log_id}")
+def cleanLog(log_id):
+    try:
+        file_path = f'log\{log_id}.txt'
+        with open(file_path, 'w') as file:
+            file.truncate(0)
+        return (f"Cleared file: {file_path}")
+    except Exception as e:
+        return 'error'
