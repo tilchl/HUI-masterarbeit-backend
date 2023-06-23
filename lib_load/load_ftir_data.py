@@ -27,7 +27,7 @@ def load_ftir_data(data_path, dict_body):
     except Exception as e:
         with open('log\log_load.txt', 'a+') as file:
             file.write(
-                f"{datetime.datetime.now()} ERROR ON LOADING FTIR DATA: {os.path.basename(data_path)} \n")
+                f"{datetime.datetime.now()} ERROR ON LOADING FTIR DATA: {os.path.basename(data_path)}: {e} \n")
 
     finally:
         return dict_body

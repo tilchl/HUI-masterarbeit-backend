@@ -1,13 +1,13 @@
-from py2neo import Relationship, Node
+from py2neo import Node
 import datetime
 
 
-def json_to_neo_process(graph, dict_body):
+def dict_to_neo_predata(graph, dict_body):
     try:
         process_node = Node('Process', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body.items()})
         graph.create(process_node)
 
-        ID = dict_body["Process ID"]
+        ID = dict_body["Sample ID"]
 
         with open('log\log_save.txt', 'a+') as file:
             file.write(f"{datetime.datetime.now()} SUCCESS ON SAVING {ID} \n")

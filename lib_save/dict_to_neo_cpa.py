@@ -2,7 +2,7 @@ from py2neo import Relationship, Node
 import datetime
 
 
-def json_to_neo_cpa(graph, dict_body):
+def dict_to_neo_cpa(graph, dict_body):
     try:
         cpa_node = Node('CPA', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body['Center Node'].items()})
         dsc_node = Node('DSC', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body['DSC'].items()})
