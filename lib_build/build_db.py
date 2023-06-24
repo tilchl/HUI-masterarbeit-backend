@@ -16,12 +16,12 @@ class BuildDatabase:
                 drop_constraint_query = f"DROP CONSTRAINT {constraint_name}"
                 self.graph.run(drop_constraint_query)
 
-            with open('log\log_build.txt', 'a+') as file:
+            with open('log/log_build.txt', 'a+') as file:
                 file.write(
                     f"{datetime.datetime.now()} SUCCESS ON DELETE ALL: {self.db_id} \n")
 
         except Exception as e:
-            with open('log\log_build.txt', 'a+') as file:
+            with open('log/log_build.txt', 'a+') as file:
                 file.write(
                     f"{datetime.datetime.now()} ERROR ON DELETE ALL: {self.db_id}: {e} \n")
 
@@ -41,12 +41,12 @@ class BuildDatabase:
                 # self.graph.run(f'CREATE CONSTRAINT FOR (n: Osmolality) REQUIRE n.File_ID IS UNIQUE')
                 # self.graph.run(f'CREATE CONSTRAINT FOR (n: Viscosity) REQUIRE n.File_ID IS UNIQUE')
 
-            with open('log\log_build.txt', 'a+') as file:
+            with open('log/log_build.txt', 'a+') as file:
                 file.write(
                     f"{datetime.datetime.now()} SUCCESS ON ADD CONSTRAINT: {self.db_id} \n")
 
         except Exception as e:
-            with open('log\log_build.txt', 'a+') as file:
+            with open('log/log_build.txt', 'a+') as file:
                 file.write(
                     f"{datetime.datetime.now()} ERROR ON ADD CONSTRAINT: {self.db_id}: {e} \n")
     
@@ -67,13 +67,13 @@ class BuildDatabase:
                 relationship_type = result['type']
                 count = result['count']
                 rep['Relation'][f'{relationship_type} node'] = count
-            with open('log\log_build.txt', 'a+') as file:
+            with open('log/log_build.txt', 'a+') as file:
                     file.write(
                         f"{datetime.datetime.now()} SUCCESS ON QUERY ALL: {self.db_id} \n")
             return str(rep)
 
         except Exception as e:
-            with open('log\log_build.txt', 'a+') as file:
+            with open('log/log_build.txt', 'a+') as file:
                 file.write(
                     f"{datetime.datetime.now()} ERROR ON QUERY ALL: {self.db_id}: {e} \n")
             return 'error'
@@ -83,13 +83,13 @@ class BuildDatabase:
             result = self.graph.run('MATCH (n) WHERE NOT (n)--() RETURN n.Sample_ID as Sample_ID').data()
             isolated_nodes = [record['Sample_ID'] for record in result]
 
-            with open('log\log_build.txt', 'a+') as file:
+            with open('log/log_build.txt', 'a+') as file:
                         file.write(
                             f"{datetime.datetime.now()} SUCCESS ON FIND ISOLATED NODES: {self.db_id} \n")
             return str(isolated_nodes)
 
         except Exception as e:
-            with open('log\log_build.txt', 'a+') as file:
+            with open('log/log_build.txt', 'a+') as file:
                 file.write(
                     f"{datetime.datetime.now()} ERROR ON FIND ISOLATED NODES: {self.db_id}: {e} \n")
             return 'error'

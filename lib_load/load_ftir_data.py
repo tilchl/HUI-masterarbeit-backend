@@ -20,12 +20,12 @@ def load_ftir_data(data_path, dict_body):
                             wn.strip())
                         dict_body["Curve"]["Spectral intensity/A"].append(
                             si.strip())
-            with open('log\log_load.txt', 'a+') as file:
+            with open('log/log_load.txt', 'a+') as file:
                 file.write(
                     f"{datetime.datetime.now()} SUCCESS ON LOADING FTIR DATA: {os.path.basename(data_path)} \n")
 
     except Exception as e:
-        with open('log\log_load.txt', 'a+') as file:
+        with open('log/log_load.txt', 'a+') as file:
             file.write(
                 f"{datetime.datetime.now()} ERROR ON LOADING FTIR DATA: {os.path.basename(data_path)}: {e} \n")
 

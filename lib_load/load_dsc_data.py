@@ -17,12 +17,12 @@ def load_dsc_data(data_path, dict_body):
                     dict_body['Curve']["Sensit./(uV/mW)"].append(sen.strip())
                     dict_body['Curve']["Segment"].append(seg.strip())
 
-        with open('log\log_load.txt', 'a+') as file:
+        with open('log/log_load.txt', 'a+') as file:
             file.write(
                 f"{datetime.datetime.now()} SUCCESS ON LOADING DSC DATA: {os.path.basename(data_path)} \n")
 
     except Exception as e:
-        with open('log\log_load.txt', 'a+') as file:
+        with open('log/log_load.txt', 'a+') as file:
             file.write(
                 f"{datetime.datetime.now()} ERROR ON LOADING DSC DATA: {os.path.basename(data_path)}: {e} \n")
 

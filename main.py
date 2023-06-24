@@ -79,7 +79,7 @@ def deleteDataStore(store_name):
 @app.get("/cleanLog/{log_id}")
 def cleanLog(log_id):
     try:
-        file_path = f'log\{log_id}.txt'
+        file_path = f'log/{log_id}.txt'
         with open(file_path, 'w') as file:
             file.truncate(0)
         return (f"Cleared file: {file_path}")
@@ -93,7 +93,7 @@ def seeLog(log_id):
 @app.post("/fileUpload/")
 async def fileUpload(file: UploadFile, data_type):
     contents = await file.read()
-    return data_receiver(f'data_store\{data_type}\{file.filename}', contents)
+    return data_receiver(f'data_store/{data_type}/{file.filename}', contents)
 
 @app.post("/feedInNeo/")
 async def feedInNeo(data_type):

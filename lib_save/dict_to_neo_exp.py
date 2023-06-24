@@ -13,11 +13,11 @@ def dict_to_neo_exp(graph, dict_body):
         graph.create(Relationship(predata_node, 'pre data in', experiment_node))
         graph.create(Relationship(postdata_node, 'post data of', experiment_node))
 
-        with open('log\log_save.txt', 'a+') as file:
+        with open('log/log_save.txt', 'a+') as file:
             file.write(f"{datetime.datetime.now()} SUCCESS ON SAVING {ID} \n")
         return 'success'
 
     except Exception as e:
-        with open('log\log_save.txt', 'a+') as file:
+        with open('log/log_save.txt', 'a+') as file:
             file.write(f"{datetime.datetime.now()} ERROR ON SAVING {ID}: {e} \n")
         return 'error'

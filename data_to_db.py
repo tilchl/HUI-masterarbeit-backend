@@ -47,9 +47,9 @@ class FeedIntoNeo4j:
 
 def feed_into_neo4j(data_type):
     try:
-        task_list = os.listdir(f'data_store\\{data_type}')
+        task_list = os.listdir(f'data_store/{data_type}')
         if len(task_list) > 0:
-            return [FeedIntoNeo4j(data_type, f'data_store\\{data_type}\{task}').feed_to_neo4j() for task in task_list]
+            return [FeedIntoNeo4j(data_type, f'data_store/{data_type}/{task}').feed_to_neo4j() for task in task_list]
         else:
             return 'nothing'
     except Exception as e:

@@ -18,8 +18,8 @@ translate = {
 
 
 def path(cpa_dir_path, data_type):
-    dir_path = cpa_dir_path + (f'/{translate[data_type]}' if '/' in cpa_dir_path else f'\\{translate[data_type]}')
-    return dir_path + ('/' if '/' in cpa_dir_path else '\\') + os.listdir(dir_path)[0]
+    dir_path = cpa_dir_path + (f'/{translate[data_type]}' if '/' in cpa_dir_path else f'/{translate[data_type]}')
+    return dir_path + ('/' if '/' in cpa_dir_path else '/') + os.listdir(dir_path)[0]
 
 
 def get_paths(cpa_dir_path):
@@ -28,7 +28,7 @@ def get_paths(cpa_dir_path):
 
 def load_cpa_data(cpa_dir_path, dict_body):
     try:
-        cpa_id = cpa_dir_path.rsplit('/' if '/' in cpa_dir_path else '\\', 1)[1]
+        cpa_id = cpa_dir_path.rsplit('/' if '/' in cpa_dir_path else '/', 1)[1]
         dict_body["Center Node"]["CPA ID"] = cpa_id
         paths = get_paths(cpa_dir_path)
         dict_body["DSC"] = load_dsc_data(paths['dsc'], dict_body["DSC"])
@@ -37,12 +37,12 @@ def load_cpa_data(cpa_dir_path, dict_body):
         dict_body["Cryomicroscopy"] = load_cryomicro_data(paths['cryomicro'], dict_body["Cryomicroscopy"])
         dict_body["Viscosity"] = load_visc_data(paths['visc'], dict_body["Viscosity"])
 
-        with open('log\log_load.txt', 'a+') as file:
+        with open('log/log_load.txt', 'a+') as file:
             file.write(
                 f"{datetime.datetime.now()} SUCCESS ON LOADING CPA DATA: {cpa_id} \n")
 
     except Exception as e:
-        with open('log\log_load.txt', 'a+') as file:
+        with open('log/log_load.txt', 'a+') as file:
             file.write(
                 f"{datetime.datetime.now()} ERROR ON LOADING CPA DATA: {cpa_id}: {e} \n")
 
