@@ -52,3 +52,39 @@ class BuildDataStore:
                 file.write(
                     f"{datetime.datetime.now()} ERROR ON CLEAR DATA STORE FOLDER {self.dir_name}: {e} \n")
             return 'error'
+    
+    def delete_one_type(self, data_type):
+        try:
+            base_dir = os.getcwd()
+            data_store_dir = os.path.join(base_dir, f'{self.dir_name}/{data_type}')
+            shutil.rmtree(data_store_dir)
+            with open('log/log_build.txt', 'a+') as file:
+                        file.write(
+                            f"{datetime.datetime.now()} SUCCESS Deleted folder: {data_store_dir} \n")
+            return 'success'
+        except Exception as e:
+            with open('log/log_build.txt', 'a+') as file:
+                file.write(
+                    f"{datetime.datetime.now()} ERROR ON CLEAR DATA STORE FOLDER {self.dir_name}: {e} \n")
+            return 'error'
+        
+    def create_one_type(self, data_type):
+        try:
+            base_dir = os.getcwd()
+            data_store_dir = os.path.join(base_dir, f'{self.dir_name}/{data_type}')
+            if not os.path.exists(data_store_dir):
+                os.makedirs(data_store_dir)
+                with open('log/log_build.txt', 'a+') as file:
+                            file.write(
+                                f"{datetime.datetime.now()} SUCCESS Created folder: {data_store_dir} \n")
+                return 'success'
+            else:
+                with open('log/log_build.txt', 'a+') as file:
+                            file.write(
+                                f"{datetime.datetime.now()} ERROR Created folder: {data_store_dir}: already exists \n")
+                return 'exists'
+        except Exception as e:
+            with open('log/log_build.txt', 'a+') as file:
+                file.write(
+                    f"{datetime.datetime.now()} ERROR Created folder {self.dir_name}: {e} \n")
+            return 'error'

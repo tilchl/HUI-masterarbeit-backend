@@ -1,0 +1,14 @@
+2023-06-24 17:54:38.162248 SUCCESS Deleted folder: D:\ma_backend\data_store 
+2023-06-24 17:55:49.249909 ERROR ON CLEAR DATA STORE FOLDER data_store: [WinError 3] 系统找不到指定的路径。: 'D:\\ma_backend\\data_store' 
+2023-06-24 18:01:44.688475 ERROR ON CLEAR DATA STORE FOLDER data_store: [WinError 3] 系统找不到指定的路径。: 'D:\\ma_backend\\data_store/process' 
+2023-06-24 18:02:21.650004 SUCCESS Created data_store folder at D:\ma_backend\data_store 
+2023-06-24 18:02:21.652003 SUCCESS Created 'cpa' folder at D:\ma_backend\data_store\cpa 
+2023-06-24 18:02:21.653006 SUCCESS Created 'process' folder at D:\ma_backend\data_store\process 
+2023-06-24 18:02:21.654002 SUCCESS Created 'pre_data' folder at D:\ma_backend\data_store\pre_data 
+2023-06-24 18:02:21.656004 SUCCESS Created 'post_data' folder at D:\ma_backend\data_store\post_data 
+2023-06-24 18:02:21.658001 SUCCESS Created 'exp' folder at D:\ma_backend\data_store\exp 
+2023-06-24 18:02:25.510944 SUCCESS Deleted folder: D:\ma_backend\data_store/process 
+2023-06-24 18:06:09.406459 SUCCESS Created folder: D:\ma_backend\data_store/process 
+2023-06-24 18:06:13.876906 ERROR Created folder: D:\ma_backend\data_store/process: already exists 
+2023-06-24 18:06:39.430756 SUCCESS Deleted folder: D:\ma_backend\data_store/process 
+2023-06-24 18:06:48.805011 SUCCESS Created folder: D:\ma_backend\data_store/process 

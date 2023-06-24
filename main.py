@@ -75,6 +75,14 @@ def buildDataStore(store_name):
 @app.get("/deleteDataStore/{store_name}")
 def deleteDataStore(store_name):
     return BuildDataStore(store_name).delete_folder()
+
+@app.get("/deleteOneType/")
+def deleteOneType(store_name, data_type):
+    return BuildDataStore(store_name).delete_one_type(data_type)
+
+@app.get("/buildOneType/")
+def buildOneType(store_name, data_type):
+    return BuildDataStore(store_name).create_one_type(data_type)
             
 @app.get("/cleanLog/{log_id}")
 def cleanLog(log_id):
