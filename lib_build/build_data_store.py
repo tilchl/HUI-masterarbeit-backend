@@ -50,7 +50,7 @@ class BuildDataStore:
         except Exception as e:
             with open('log/log_build.txt', 'a+') as file:
                 file.write(
-                    f"{datetime.datetime.now()} ERROR ON CLEAR DATA STORE FOLDER {self.dir_name}: {e} \n")
+                    f"{datetime.datetime.now()} ERROR ON DELETE DATA STORE FOLDER {self.dir_name}: {e} \n")
             return 'error'
     
     def delete_one_type(self, data_type):
@@ -65,7 +65,7 @@ class BuildDataStore:
         except Exception as e:
             with open('log/log_build.txt', 'a+') as file:
                 file.write(
-                    f"{datetime.datetime.now()} ERROR ON CLEAR DATA STORE FOLDER {self.dir_name}: {e} \n")
+                    f"{datetime.datetime.now()} ERROR ON DELETE DATA STORE FOLDER {data_store_dir}: {e} \n")
             return 'error'
         
     def create_one_type(self, data_type):
