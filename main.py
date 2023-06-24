@@ -1,9 +1,12 @@
-from fastapi import FastAPI
+import os
+from fastapi import FastAPI, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import urllib.parse
 from lib_save import connect_to_db
 from lib_build import BuildDatabase, BuildDataStore
+from data_to_db import feed_into_neo4j
+from data_receiver import data_receiver
 
 app = FastAPI()
 
@@ -18,7 +21,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return 'successfully connect to backend'
+    return 'success'
 
 GRAPH_CRYO = connect_to_db('cryo')
 GRAPH_CPA = connect_to_db('cpa')
@@ -73,7 +76,6 @@ def buildDataStore(store_name):
 def deleteDataStore(store_name):
     return BuildDataStore(store_name).delete_folder()
             
-    
 @app.get("/cleanLog/{log_id}")
 def cleanLog(log_id):
     try:
@@ -83,3 +85,24 @@ def cleanLog(log_id):
         return (f"Cleared file: {file_path}")
     except Exception as e:
         return 'error'
+    
+@app.get("/seeLog/{log_id}")
+def seeLog(log_id):
+    pass
+
+@app.post("/fileUpload/")
+async def fileUpload(file: UploadFile, data_type):
+    contents = await file.read()
+    return data_receiver(f'data_store\{data_type}\{file.filename}', contents)
+
+@app.post("/feedInNeo/")
+async def feedInNeo(data_type):
+    return feed_into_neo4j(data_type)
+
+
+# print(FeedIntoNeo4j('predata', 'data_store\pre_data\EQ20220824A1-Pre1.txt').feed_to_neo4j())
+# print(FeedIntoNeo4j('postdata', 'data_store\post_data\EQ20220824-3c-LN2-4-4.txt').feed_to_neo4j())
+# print(FeedIntoNeo4j('exp', 'data_store\exp\experiment_1.txt').feed_to_neo4j())
+
+# print(FeedIntoNeo4j('cpa', 'data_store\cpa\CPA1').feed_to_neo4j())
+# print(FeedIntoNeo4j('process', 'data_store\process\Prozess1.txt').feed_to_neo4j())

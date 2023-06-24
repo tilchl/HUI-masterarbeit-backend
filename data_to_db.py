@@ -1,3 +1,4 @@
+import os
 from lib_load import load_cpa_data, load_exp_data, load_pre_data, load_post_data, load_process_data, load_config_data
 from lib_save import dict_to_neo_process, dict_to_neo_cpa, dict_to_neo_predata, dict_to_neo_postdata, dict_to_neo_exp, connect_to_db
 
@@ -42,3 +43,14 @@ class FeedIntoNeo4j:
             return dict_to_neo_postdata(GRAPH_CRYO, loaded_data)
         elif self.data_type == 'exp':
             return dict_to_neo_exp(GRAPH_CRYO, loaded_data)
+
+
+def feed_into_neo4j(data_type):
+    try:
+        task_list = os.listdir(f'data_store\\{data_type}')
+        if len(task_list) > 0:
+            return [FeedIntoNeo4j(data_type, f'data_store\\{data_type}\{task}').feed_to_neo4j() for task in task_list]
+        else:
+            return 'nothing'
+    except Exception as e:
+        return 'error'
