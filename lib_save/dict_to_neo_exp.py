@@ -10,8 +10,8 @@ def dict_to_neo_exp(graph, dict_body):
         predata_node = graph.nodes.match('PreData', Sample_ID = dict_body['PreData Sample ID']).first()
         postdata_node = graph.nodes.match('PostData', Sample_ID = dict_body['PostData Sample ID']).first()
         experiment_node = graph.nodes.match('Experiment', Experiment_ID = dict_body['Experiment ID']).first()
-        graph.create(Relationship(predata_node, 'pre data in', experiment_node))
-        graph.create(Relationship(postdata_node, 'post data of', experiment_node))
+        graph.create(Relationship(predata_node, 'pre_data_of_experiment', experiment_node))
+        graph.create(Relationship(postdata_node, 'post_data_of_experiment', experiment_node))
 
         with open('log/log_save.txt', 'a+') as file:
             file.write(f"{datetime.datetime.now()} SUCCESS ON SAVING {ID} \n")

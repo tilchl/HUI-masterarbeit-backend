@@ -15,11 +15,11 @@ def dict_to_neo_cpa(graph, dict_body):
         osmo_node = Node('Osmolality')
         visc_node = Node('Viscosity')
 
-        graph.create(Relationship(cpa_node, "dsc_info", dsc_node))
-        graph.create(Relationship(cpa_node, "ftir_info", ftir_node))
-        graph.create(Relationship(cpa_node, "cryomicro_info", cryomicro_node))
-        graph.create(Relationship(cpa_node, "osmo_info", osmo_node))
-        graph.create(Relationship(cpa_node, "visc_info", visc_node))
+        graph.create(Relationship(cpa_node, "dsc_info_of_cpa", dsc_node))
+        graph.create(Relationship(cpa_node, "ftir_info_of_cpa", ftir_node))
+        graph.create(Relationship(cpa_node, "cryomicro_info_of_cpa", cryomicro_node))
+        graph.create(Relationship(cpa_node, "osmo_info_of_cpa", osmo_node))
+        graph.create(Relationship(cpa_node, "visc_info_of_cpa", visc_node))
 
         with open('log/log_save.txt', 'a+') as file:
             file.write(f"{datetime.datetime.now()} SUCCESS ON SAVING {ID} \n")

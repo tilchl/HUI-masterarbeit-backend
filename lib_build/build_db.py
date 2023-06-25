@@ -66,7 +66,7 @@ class BuildDatabase:
             for result in relationship_counts:
                 relationship_type = result['type']
                 count = result['count']
-                rep['Relation'][f'{relationship_type} node'] = count
+                rep['Relation'][f'{relationship_type}'] = count
             with open('log/log_build.txt', 'a+') as file:
                     file.write(
                         f"{datetime.datetime.now()} SUCCESS ON QUERY ALL: {self.db_id} \n")
