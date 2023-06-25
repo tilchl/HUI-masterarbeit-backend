@@ -20,4 +20,3 @@ cleanLog('log_save')
 
 # print(FeedIntoNeo4j('cpa', 'data_store\cpa\CPA1').feed_to_neo4j())
 # print(FeedIntoNeo4j('process', 'data_store\process\Prozess1.txt').feed_to_neo4j())
-
