@@ -99,9 +99,11 @@ def seeLog(log_id):
     pass
 
 @app.post("/fileUpload/")
-async def fileUpload(file: UploadFile, data_type):
-    contents = await file.read()
-    return data_receiver(f'data_store/{data_type}/{file.filename}', contents)
+async def fileUpload(files: list[UploadFile], data_type):
+    if data_type == 'cpa':
+        return [{'file_name':"/".join(file.filename.split("/")[-3:]), 'result':data_receiver(f'data_store/{data_type}/{"/".join(file.filename.split("/")[-3:])}', await file.read())} for file in files]
+    else:
+        return [{'file_name': file.filename, 'result': data_receiver(f'data_store/{data_type}/{file.filename}', await file.read())} for file in files]
 
 @app.post("/feedInNeo/")
 async def feedInNeo(data_type):

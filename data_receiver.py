@@ -4,6 +4,10 @@ import os
 
 def data_receiver(save_path:str, contents):
     try: 
+        if 'data_store/cpa' in save_path:
+            if not os.path.exists(save_path.rsplit('/', 1)[0]):
+                os.makedirs(save_path.rsplit('/', 1)[0])
+        
         with open(save_path, "wb") as f:
             f.write(contents)
 

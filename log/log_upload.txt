@@ -1,0 +1,35 @@
+2023-06-25 17:18:30.105910 SUCCESS ON UPLOADING: Prozess1.txt 
+2023-06-25 17:19:22.641426 SUCCESS ON UPLOADING: EQ20220824A1-Pre1.txt 
+2023-06-25 17:19:44.275745 SUCCESS ON UPLOADING: EQ20220824A1-Pre2.txt 
+2023-06-25 17:20:59.794367 ERROR ON UPLOADING: EQ20220824A1-Pre1.txt: [Errno 2] No such file or directory: 'data_store/process/Pre/EQ20220824A1-Pre1.txt' 
+2023-06-25 17:21:38.482175 ERROR ON UPLOADING: 01 DMSO 10 percent in demin water.asc: [Errno 2] No such file or directory: 'data_store/process/CPA1/FTIR/01 DMSO 10 percent in demin water.asc' 
+2023-06-25 19:45:31.323074 SUCCESS ON UPLOADING: Prozess1.txt 
+2023-06-25 20:19:36.490992 SUCCESS ON UPLOADING: EQ20220824A1-Pre1.txt 
+2023-06-25 20:19:36.490992 SUCCESS ON UPLOADING: EQ20220824A1-Pre2.txt 
+2023-06-25 20:19:36.490992 SUCCESS ON UPLOADING: EQ20220824A1-Pre3.txt 
+2023-06-25 20:21:46.618285 ERROR ON UPLOADING: EQ20220824A1-Pre2.txt: [Errno 2] No such file or directory: 'data_store/undefined/EQ20220824A1-Pre2.txt' 
+2023-06-25 20:22:04.356563 ERROR ON UPLOADING: EQ20220824-3c-LN2-4-5.txt: [Errno 2] No such file or directory: 'data_store/undefined/EQ20220824-3c-LN2-4-5.txt' 
+2023-06-25 20:24:29.871684 ERROR ON UPLOADING: 01 DMSO 10 percent in demin water.asc: [Errno 2] No such file or directory: 'data_store/undefined/CPA/CPA1/FTIR/01 DMSO 10 percent in demin water.asc' 
+2023-06-25 20:24:29.871684 ERROR ON UPLOADING: CPA1 0.1 M Sucrose.txt: [Errno 2] No such file or directory: 'data_store/undefined/CPA/CPA1/DSC/CPA1 0.1 M Sucrose.txt' 
+2023-06-25 20:39:47.953199 ERROR ON UPLOADING: : [Errno 13] Permission denied: 'data_store/cpa/' 
+2023-06-25 20:41:51.302837 ERROR ON UPLOADING: : [Errno 13] Permission denied: 'data_store/cpa/' 
+2023-06-25 20:42:22.576256 SUCCESS ON UPLOADING: Prozess1.txt 
+2023-06-25 20:44:09.921205 ERROR ON UPLOADING: : [Errno 13] Permission denied: 'data_store/cpa/' 
+2023-06-25 20:44:28.397421 SUCCESS ON UPLOADING: Prozess1.txt 
+2023-06-25 20:49:21.887446 ERROR ON UPLOADING: 01 DMSO 10 percent in demin water.asc: [Errno 2] No such file or directory: 'data_store/pre_data/CPA/CPA1/FTIR/01 DMSO 10 percent in demin water.asc' 
+2023-06-25 20:49:21.888457 ERROR ON UPLOADING: CPA1 0.1 M Sucrose.txt: [Errno 2] No such file or directory: 'data_store/pre_data/CPA/CPA1/DSC/CPA1 0.1 M Sucrose.txt' 
+2023-06-25 20:55:38.913648 ERROR ON UPLOADING: 01 DMSO 10 percent in demin water.asc: [Errno 2] No such file or directory: 'data_store/pre_data/CPA1/FTIR/01 DMSO 10 percent in demin water.asc' 
+2023-06-25 20:55:38.917999 ERROR ON UPLOADING: CPA1 0.1 M Sucrose.txt: [Errno 2] No such file or directory: 'data_store/pre_data/CPA1/DSC/CPA1 0.1 M Sucrose.txt' 
+2023-06-25 20:57:56.298352 ERROR ON UPLOADING: 01 DMSO 10 percent in demin water.asc: [Errno 2] No such file or directory: 'data_store/pre_data/CPA1/FTIR/01 DMSO 10 percent in demin water.asc' 
+2023-06-25 20:57:56.298352 ERROR ON UPLOADING: CPA1 0.1 M Sucrose.txt: [Errno 2] No such file or directory: 'data_store/pre_data/CPA1/DSC/CPA1 0.1 M Sucrose.txt' 
+2023-06-25 21:01:08.186405 ERROR ON UPLOADING: 01 DMSO 10 percent in demin water.asc: [Errno 2] No such file or directory: 'data_store/pre_data/CPA1/FTIR/01 DMSO 10 percent in demin water.asc' 
+2023-06-25 21:01:08.187423 ERROR ON UPLOADING: CPA1 0.1 M Sucrose.txt: [Errno 2] No such file or directory: 'data_store/pre_data/CPA1/DSC/CPA1 0.1 M Sucrose.txt' 
+2023-06-25 21:01:53.726756 SUCCESS ON UPLOADING: 01 DMSO 10 percent in demin water.asc 
+2023-06-25 21:01:53.734747 SUCCESS ON UPLOADING: CPA1 0.1 M Sucrose.txt 
+2023-06-25 21:04:38.083369 ERROR ON UPLOADING: 01 DMSO 10 percent in demin water.asc: [WinError 183] 当文件已存在时，无法创建该文件。: 'data_store/cpa/CPA1/FTIR' 
+2023-06-25 21:04:38.099049 ERROR ON UPLOADING: CPA1 0.1 M Sucrose.txt: [WinError 183] 当文件已存在时，无法创建该文件。: 'data_store/cpa/CPA1/DSC' 
+2023-06-25 21:05:57.472001 SUCCESS ON UPLOADING: 01 DMSO 10 percent in demin water.asc 
+2023-06-25 21:05:57.472001 SUCCESS ON UPLOADING: CPA1 0.1 M Sucrose.txt 
+2023-06-25 21:06:11.762605 ERROR ON UPLOADING: : [Errno 13] Permission denied: 'data_store/cpa/' 
+2023-06-25 21:06:11.764760 ERROR ON UPLOADING: : [Errno 13] Permission denied: 'data_store/cpa/' 
+2023-06-25 21:06:11.766839 ERROR ON UPLOADING: : [Errno 13] Permission denied: 'data_store/cpa/' 
