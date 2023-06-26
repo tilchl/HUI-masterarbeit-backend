@@ -40,11 +40,9 @@ def load_cpa_data(cpa_dir_path, dict_body):
         with open('log/log_load.txt', 'a+') as file:
             file.write(
                 f"{datetime.datetime.now()} SUCCESS ON LOADING CPA DATA: {cpa_id} \n")
-
+        return dict_body
     except Exception as e:
         with open('log/log_load.txt', 'a+') as file:
             file.write(
                 f"{datetime.datetime.now()} ERROR ON LOADING CPA DATA: {cpa_id}: {e} \n")
-
-    finally:
-        return dict_body
+        return 'error'
