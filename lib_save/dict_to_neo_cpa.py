@@ -28,4 +28,7 @@ def dict_to_neo_cpa(graph, dict_body):
     except Exception as e:
         with open('log/log_save.txt', 'a+') as file:
             file.write(f"{datetime.datetime.now()} ERROR ON SAVING {ID}: {e} \n")
-        return 'error'
+        if 'already exists' in str(e):
+            return 'exists'
+        else:
+            return 'error'

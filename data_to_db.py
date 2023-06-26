@@ -19,10 +19,10 @@ class FeedIntoNeo4j:
         elif self.data_type == 'process':
             config_data = load_config_data(self.data_type)
             loaded_data = load_process_data(self.data_path, config_data)
-        elif self.data_type == 'predata':
+        elif self.data_type == 'pre_data':
             config_data = load_config_data(self.data_type)
             loaded_data = load_pre_data(self.data_path, config_data)
-        elif self.data_type == 'postdata':
+        elif self.data_type == 'post_data':
             config_data = load_config_data(self.data_type)
             loaded_data = load_post_data(self.data_path, config_data)
         elif self.data_type == 'exp':
@@ -37,20 +37,10 @@ class FeedIntoNeo4j:
             return dict_to_neo_cpa(GRAPH_CPA, loaded_data)
         elif self.data_type == 'process':
             return dict_to_neo_process(GRAPH_CPA, loaded_data)
-        elif self.data_type == 'predata':
+        elif self.data_type == 'pre_data':
             return dict_to_neo_predata(GRAPH_CRYO, loaded_data)
-        elif self.data_type == 'postdata':
+        elif self.data_type == 'post_data':
             return dict_to_neo_postdata(GRAPH_CRYO, loaded_data)
         elif self.data_type == 'exp':
             return dict_to_neo_exp(GRAPH_CRYO, loaded_data)
 
-
-def feed_into_neo4j(data_type):
-    try:
-        task_list = os.listdir(f'data_store/{data_type}')
-        if len(task_list) > 0:
-            return [FeedIntoNeo4j(data_type, f'data_store/{data_type}/{task}').feed_to_neo4j() for task in task_list]
-        else:
-            return 'nothing'
-    except Exception as e:
-        return 'error'

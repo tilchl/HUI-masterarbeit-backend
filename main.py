@@ -5,7 +5,7 @@ import json
 import urllib.parse
 from lib_save import connect_to_db
 from lib_build import BuildDatabase, BuildDataStore
-from data_to_db import feed_into_neo4j
+from data_to_db import FeedIntoNeo4j
 from data_receiver import data_receiver
 
 app = FastAPI()
@@ -100,19 +100,26 @@ def seeLog(log_id):
 
 @app.post("/fileUpload/")
 async def fileUpload(files: list[UploadFile], data_type):
+    res = []
     if data_type == 'cpa':
-        return str([{'file_name':"/".join(file.filename.split("/")[-3:]), 'result':data_receiver(f'data_store/{data_type}/{"/".join(file.filename.split("/")[-3:])}', await file.read())} for file in files])
+        for file in files:
+            file_name = "/".join(file.filename.split("/")[-3:])
+            upload_result = data_receiver(f'data_store/{data_type}/{file_name}', await file.read())
+            res.append({'file_name':file_name, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
+        return str(res)
     else:
-        return str([{'file_name': file.filename, 'result': data_receiver(f'data_store/{data_type}/{file.filename}', await file.read())} for file in files])
+        for file in files:
+            upload_result = data_receiver(f'data_store/{data_type}/{file.filename}', await file.read())
+            res.append({'file_name':file.filename, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
+        return str(res)
 
-@app.post("/feedInNeo/")
-async def feedInNeo(data_type):
-    return feed_into_neo4j(data_type)
+@app.get("/feedInNeo/")
+async def feedInNeo(data_type, file_name):
+    if data_type == 'cpa':
+        return FeedIntoNeo4j(data_type, f'data_store/{data_type}/{file_name.split("/")[0]}').feed_to_neo4j()
+    else:
+        return FeedIntoNeo4j(data_type, f'data_store/{data_type}/{file_name}').feed_to_neo4j()
+    
+    
 
 
-# print(FeedIntoNeo4j('predata', 'data_store\pre_data\EQ20220824A1-Pre1.txt').feed_to_neo4j())
-# print(FeedIntoNeo4j('postdata', 'data_store\post_data\EQ20220824-3c-LN2-4-4.txt').feed_to_neo4j())
-# print(FeedIntoNeo4j('exp', 'data_store\exp\experiment_1.txt').feed_to_neo4j())
-
-# print(FeedIntoNeo4j('cpa', 'data_store\cpa\CPA1').feed_to_neo4j())
-# print(FeedIntoNeo4j('process', 'data_store\process\Prozess1.txt').feed_to_neo4j())

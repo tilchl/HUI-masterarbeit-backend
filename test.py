@@ -4,14 +4,15 @@ from main import *
 cleanLog('log_build')
 cleanLog('log_load')
 cleanLog('log_save')
+cleanLog('log_upload')
 
 # deleteDataStore('data_store')
 # buildDataStore('data_store')
 
-# cleanDatabase('cpa')
-# cleanDatabase('cryo')
-# initDatabase('cpa')
-# initDatabase('cryo')
+cleanDatabase('cpa')
+cleanDatabase('cryo')
+initDatabase('cpa')
+initDatabase('cryo')
 
 
 # print(FeedIntoNeo4j('predata', 'data_store\pre_data\EQ20220824A1-Pre1.txt').feed_to_neo4j())

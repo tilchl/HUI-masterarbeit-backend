@@ -3,8 +3,8 @@ import json
 struc_paths = {
     'cpa': 'conf\struc_cpa.json',
     'process': 'conf\struc_process.json',
-    'predata': 'conf\struc_predata.json',
-    'postdata': 'conf\struc_postdata.json',
+    'pre_data': 'conf\struc_predata.json',
+    'post_data': 'conf\struc_postdata.json',
     'exp': 'conf\struc_exp.json'
 }
 
