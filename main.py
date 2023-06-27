@@ -6,7 +6,7 @@ import urllib.parse
 from lib_save import connect_to_db
 from lib_build import BuildDatabase, BuildDataStore
 from data_to_db import FeedIntoNeo4j
-from data_receiver import data_receiver
+from data_receiver import data_receiver, dict_to_txt
 
 app = FastAPI()
 
@@ -110,6 +110,21 @@ async def fileUpload(files: list[UploadFile], data_type):
     else:
         for file in files:
             upload_result = data_receiver(f'data_store/{data_type}/{file.filename}', await file.read())
+            res.append({'file_name':file.filename, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
+        return str(res)
+    
+@app.post("/fileCreate/")
+async def fileCreate(files: list[UploadFile], data_type):
+    res = []
+    if data_type == 'cpa':
+        for file in files:
+            file_name = "/".join(file.filename.split("/")[-3:])
+            upload_result = data_receiver(f'data_store/{data_type}/{file_name}', dict_to_txt(await file.read()))
+            res.append({'file_name':file_name, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
+        return str(res)
+    else:
+        for file in files:
+            upload_result = data_receiver(f'data_store/{data_type}/{file.filename}', dict_to_txt(await file.read()))
             res.append({'file_name':file.filename, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
 
