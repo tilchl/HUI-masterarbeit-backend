@@ -1,0 +1,10 @@
+Einfriergerät : XY
+Abkühlrate: 1 K/min
+Konservierungsbehäler: 2 ml Cryovial
+Lagerungstemp. : -196°C
+Lagerungsmedium : LN2
+Lagerungsdauer : 8 Wochen
+Auftautemp. : 37°C
+Waschschritte : 1
+Verdünnungsmedium : PBS
+Veerdünnungsfaktor : 5/1

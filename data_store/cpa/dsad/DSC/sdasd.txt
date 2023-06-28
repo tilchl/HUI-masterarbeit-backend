@@ -1,0 +1,2 @@
+File ID: 
+Curve: {'Temp./°C': [], 'Time/min': [], 'DSC/(mW/mg)': [], 'Sensit./(uV/mW)': [], 'Segment': []}
