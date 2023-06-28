@@ -13,8 +13,8 @@ def load_post_data(data_path, dict_body):
                     key, value = line.split(":", 1)
                     key = key.strip()
                     value = value.strip()
-                    if key in dict_body.keys():
-                        dict_body[key] = value
+                    # if key in dict_body.keys():
+                    dict_body[key] = value
 
         with open('log/log_load.txt', 'a+') as file:
             file.write(

@@ -1,0 +1,2 @@
+2023-06-28 14:49:03.117103 SUCCESS Deleted folder: D:\ma_backend\data_store/process 
+2023-06-28 14:49:03.123102 SUCCESS Created folder: D:\ma_backend\data_store/process 

@@ -26,7 +26,10 @@ def load_process_data(data_path, dict_body):
                     key, value = line.split(":", 1)
                     key = key.strip()
                     value = value.strip()
-                    dict_body[translate[key]] = value
+                    if key in translate.keys():
+                        dict_body[translate[key]] = value
+                    else:
+                        dict_body[key] = value
 
         with open('log/log_load.txt', 'a+') as file:
             file.write(
