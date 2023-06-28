@@ -99,42 +99,42 @@ def seeLog(log_id):
     pass
 
 @app.post("/fileUpload/")
-async def fileUpload(files: list[UploadFile], data_type):
+async def fileUpload(files: list[UploadFile], data_type, data_store):
     res = []
     if data_type == 'cpa':
         for file in files:
             file_name = "/".join(file.filename.split("/")[-3:])
-            upload_result = data_receiver(f'data_store/{data_type}/{file_name}', await file.read())
+            upload_result = data_receiver(f'{data_store}/{data_type}/{file_name}', await file.read())
             res.append({'file_name':file_name, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
     else:
         for file in files:
-            upload_result = data_receiver(f'data_store/{data_type}/{file.filename}', await file.read())
+            upload_result = data_receiver(f'{data_store}/{data_type}/{file.filename}', await file.read())
             res.append({'file_name':file.filename, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
     
 @app.post("/fileCreate/")
-async def fileCreate(files: list[UploadFile], data_type):
+async def fileCreate(files: list[UploadFile], data_type, data_store):
     res = []
     if data_type == 'cpa':
         for file in files:
             file_name = "/".join(file.filename.split("/")[-3:])
-            upload_result = data_receiver(f'data_store/{data_type}/{file_name}', dict_to_txt(await file.read()))
+            upload_result = data_receiver(f'{data_store}/{data_type}/{file_name}', dict_to_txt(await file.read()), data_store)
             res.append({'file_name':file_name, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
     else:
         for file in files:
-            upload_result = data_receiver(f'data_store/{data_type}/{file.filename}', dict_to_txt(await file.read()))
+            upload_result = data_receiver(f'{data_store}/{data_type}/{file.filename}', dict_to_txt(await file.read()), data_store)
             res.append({'file_name':file.filename, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
 
 @app.get("/feedInNeo/")
-async def feedInNeo(data_type, file_name):
+async def feedInNeo(data_type, file_name, data_store):
     try:
         if data_type == 'cpa':
-            return FeedIntoNeo4j(data_type, f'data_store/{data_type}/{file_name.split("/")[0]}').feed_to_neo4j()
+            return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name.split("/")[0]}').feed_to_neo4j()
         else:
-            return FeedIntoNeo4j(data_type, f'data_store/{data_type}/{file_name}').feed_to_neo4j()
+            return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
     
     except Exception as e:
         return 'error'
