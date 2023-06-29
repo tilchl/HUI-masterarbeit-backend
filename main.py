@@ -104,12 +104,12 @@ async def fileUpload(files: list[UploadFile], data_type, data_store):
     if data_type == 'cpa':
         for file in files:
             file_name = "/".join(file.filename.split("/")[-3:])
-            upload_result = data_receiver(f'{data_store}/{data_type}/{file_name}', await file.read())
+            upload_result = data_receiver(f'{data_store}/{data_type}/{file_name}', await file.read(), data_store)
             res.append({'file_name':file_name, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
     else:
         for file in files:
-            upload_result = data_receiver(f'{data_store}/{data_type}/{file.filename}', await file.read())
+            upload_result = data_receiver(f'{data_store}/{data_type}/{file.filename}', await file.read(), data_store)
             res.append({'file_name':file.filename, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
     
