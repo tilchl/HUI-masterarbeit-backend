@@ -1,6 +1,6 @@
 {
-    "profile_cryo": "neo4j://ec2-3-120-157-185.eu-central-1.compute.amazonaws.com:7687",
-    "password_cryo": "test_ma",
-    "profile_cpa": "neo4j://ec2-3-120-157-185.eu-central-1.compute.amazonaws.com:7688",
+    "profile_cryo": "neo4j://18.195.20.148:7687",
+    "password_cryo": "test_cryo",
+    "profile_cpa": "neo4j://18.185.41.245:7687",
     "password_cpa": "test_cpa"
 }
