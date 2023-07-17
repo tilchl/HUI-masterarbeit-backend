@@ -138,6 +138,24 @@ def feedInNeo(data_type, file_name, data_store):
     
     except Exception as e:
         return 'error'
-    
 
 
+@app.get("/queryOneType/")
+def queryOneType(data_type):
+    id = {
+        'PreData': 'Sample_ID',
+        'PostData': 'Sample_ID',
+        'Experiment': 'Experiment_ID',
+        'Process': 'Process_ID',
+        'CPA': 'CPA_ID'
+    }
+
+    query = f"MATCH (p:{data_type}) RETURN p.{id[data_type]} AS ID"
+    if data_type in ['PreData', 'PostData', 'Experiment']:
+        result = GRAPH_CRYO.run(query).data()
+    else:
+        result = GRAPH_CPA.run(query).data()
+    idList = []
+    for record in result:
+        idList.append(record['ID'])
+    return str(sorted(idList)).replace("'", '"')
