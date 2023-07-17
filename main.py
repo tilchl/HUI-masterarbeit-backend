@@ -129,7 +129,7 @@ async def fileCreate(files: list[UploadFile], data_type, data_store):
         return str(res)
 
 @app.get("/feedInNeo/")
-async def feedInNeo(data_type, file_name, data_store):
+def feedInNeo(data_type, file_name, data_store):
     try:
         if data_type == 'cpa':
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name.split("/")[0]}').feed_to_neo4j()

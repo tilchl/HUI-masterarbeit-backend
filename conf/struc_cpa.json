@@ -16,7 +16,7 @@
         "File ID": null,
         "Curve": {
             "Wavenumber/cm^-1": [],
-            "Spectral intensity/A": []
+            "Absorbance/A": []
         }
     },
     "Cryomicroscopy": {},

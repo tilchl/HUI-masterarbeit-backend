@@ -11,15 +11,19 @@ import os
 translate = {
     'dsc': 'DSC',
     'ftir': 'FTIR',
-    'osmo': 'Osmolalität',
-    'cryomicro': 'Kryomikroskopie',
-    'visc': 'Viskosität'
+    'osmo': 'Osmolality',
+    'cryomicro': 'Cryomicroscopy',
+    'visc': 'Viscosity'
 }
 
 
 def path(cpa_dir_path, data_type):
     dir_path = cpa_dir_path + (f'/{translate[data_type]}' if '/' in cpa_dir_path else f'/{translate[data_type]}')
-    return dir_path + ('/' if '/' in cpa_dir_path else '/') + os.listdir(dir_path)[0]
+    if os.path.exists(dir_path):
+        file_name = os.listdir(dir_path)[0]
+    else:
+        file_name = 'default.txt'
+    return dir_path + ('/' if '/' in cpa_dir_path else '/') + file_name
 
 
 def get_paths(cpa_dir_path):
