@@ -45,7 +45,7 @@ class FeedIntoNeo4j:
     def load_and_feed_experiment(self):
         try:
             df = pd.read_csv(self.data_path, sep=',', header=0)
-            with open(f'log/log_{os.path.basename(self.data_path).split(".")[0]}.txt', 'w') as file:
+            with open(f'log/log_exps/log_{os.path.basename(self.data_path).split(".")[0]}.txt', 'w') as file:
                     file.write(
                         "Experiment ID,CPA ID,Process ID,PreData Sample ID,PostData Sample ID,result\n")
 
@@ -63,7 +63,7 @@ class FeedIntoNeo4j:
                         f"{datetime.datetime.now()} SUCCESS ON LOADING EXP DATA: {row['Experiment']} \n")
                     
                 feed_to_neo_result = dict_to_neo_exp(GRAPH_CRYO, config_data)
-                with open(f'log/log_{os.path.basename(self.data_path).split(".")[0]}.txt', 'a+') as file:
+                with open(f'log/log_exps/log_{os.path.basename(self.data_path).split(".")[0]}.txt', 'a+') as file:
                     file.write(
                         f"{row['Experiment']},{row['CPA']},{row['Process']},{row['PreData Sample']},{row['PostData Sample']},{feed_to_neo_result} \n")
 
