@@ -1,4 +1,3 @@
-from .load_exp_data import *
 from .load_cpa_data import *
 from .load_predata import *
 from .load_postdata import *
