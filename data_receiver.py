@@ -31,14 +31,17 @@ def data_receiver(save_path, contents, data_type):
 def dict_to_txt(dict_form_str_data, data_type, file_name):
     try:
         dict_data = json.loads(dict_form_str_data)
-        content = ''
-        for key, value in dict_data.items():
-            if data_type == 'exp':
-                # value = ast.literal_eval(value.replace("'", "\""))
-                content+=(f'{",".join(value)}\n')
-            else:
+        if data_type == 'exp':
+            content = '{'
+            for key, value in dict_data.items():
+                content+=(f'"{key}": {value},')
+            content = content[:-1] + "}"
+            return content.replace("'", '"').encode('utf-8')
+        else:
+            content = ''
+            for key, value in dict_data.items():
                 content+=(f'{key}: {value}\n')
-        return content.encode('utf-8')
+            return content.encode('utf-8')
     
     except Exception as e:
         with open('log/log_upload.txt', 'a+') as file:
