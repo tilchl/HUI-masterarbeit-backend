@@ -166,4 +166,4 @@ def queryOneNode(data_type, ID):
         result = GRAPH_CRYO.run(query).data()
     else:
         result = GRAPH_CPA.run(query).data()
-    return result
+    return result[0]['p']
