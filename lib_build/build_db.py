@@ -32,7 +32,7 @@ class BuildDatabase:
                 self.graph.run(f'CREATE CONSTRAINT FOR (n: PreData) REQUIRE n.Sample_ID IS UNIQUE')
                 self.graph.run(f'CREATE CONSTRAINT FOR (n: PostData) REQUIRE n.Sample_ID IS UNIQUE')
                 self.graph.run(f'CREATE CONSTRAINT FOR (n: Experiment) REQUIRE n.Experiment_ID IS UNIQUE')
-                self.graph.run(f'CREATE CONSTRAINT FOR (n: Probe) REQUIRE n.Sample_ID IS UNIQUE')
+                # self.graph.run(f'CREATE CONSTRAINT FOR (n: Probe) REQUIRE n.Sample_ID IS UNIQUE')
                 self.graph.run(f'CREATE CONSTRAINT FOR (n: Versuch) REQUIRE n.Versuch_ID IS UNIQUE')
             elif self.db_id == 'cpa':
                 self.graph.run(f'CREATE CONSTRAINT FOR (n: CPA) REQUIRE n.CPA_ID IS UNIQUE')

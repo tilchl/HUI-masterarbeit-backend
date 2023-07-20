@@ -30,15 +30,15 @@ def dict_to_neo_probe(graph, dict_body, versuch):
 
 def dict_to_neo_expriment(graph, dict_body, experiment_id):
     try:
+        experiment_node = Node('Experiment',Experiment_ID = experiment_id)
+        graph.create(experiment_node)
         with open(f'log/log_exps/log_{experiment_id}.txt', 'w') as file:
-                file.write(
-                    "Versuch ID,Sample ID,CPA ID,Process ID,PreData ID,PostData ID,result\n")
+                file.write(str(dict_body)+
+                    "\nVersuch ID,Sample ID,CPA ID,Process ID,PreData ID,PostData ID,result\n")
 
         infos = []
         for versuch in dict_body:
-            experiment_node = Node('Experiment',Experiment_ID = experiment_id)
             versuch_node = Node('Versuch',Versuch_ID = dict_body[versuch]['Versuche ID'])
-            graph.create(experiment_node)
             graph.create(versuch_node)
             
             experiment_node = graph.nodes.match('Experiment', Experiment_ID = experiment_id).first()
