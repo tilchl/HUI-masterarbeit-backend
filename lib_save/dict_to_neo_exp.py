@@ -37,26 +37,29 @@ def dict_to_neo_expriment(graph, dict_body, experiment_id):
         infos = []
         for versuch in dict_body:
             experiment_node = Node('Experiment',Experiment_ID = experiment_id)
-            versuch_node = Node('Versuch',Versuch_ID = versuch)
+            versuch_node = Node('Versuch',Versuch_ID = dict_body[versuch]['Versuche ID'])
             graph.create(experiment_node)
-            graph.create(experiment_node)
+            graph.create(versuch_node)
             
             experiment_node = graph.nodes.match('Experiment', Experiment_ID = experiment_id).first()
-            versuch_node = graph.nodes.match('Versuch', Versuch_ID = versuch).first()
+            versuch_node = graph.nodes.match('Versuch', Versuch_ID = dict_body[versuch]['Versuche ID']).first()
             graph.create(Relationship(versuch_node, 'versuch_of_experiment', experiment_node))
 
 
             for probe in dict_body[versuch]:
-                with open('log/log_load.txt', 'a+') as file:
-                    file.write(
-                        f"{datetime.datetime.now()} SUCCESS ON LOADING PROBE DATA: {probe['Sample ID']} \n")
-                
-                feed_to_neo_result = dict_to_neo_probe(graph, probe, versuch)
-            with open(f'log/log_exps/log_{experiment_id}.txt', 'a+') as file:
-                file.write(
-                    f"{versuch},{probe['Sample ID']},{probe['CPA ID']},{probe['Process ID']},{probe['PreData ID']},{probe['PostData ID']},{feed_to_neo_result} \n")
+                if probe == 'Versuche ID':
+                    continue
+                else:
+                    with open('log/log_load.txt', 'a+') as file:
+                        file.write(
+                            f"{datetime.datetime.now()} SUCCESS ON LOADING PROBE DATA: {dict_body[versuch][probe]['Sample ID']} \n")
+                    
+                    feed_to_neo_result = dict_to_neo_probe(graph, dict_body[versuch][probe], dict_body[versuch]['Versuche ID'])
+                    with open(f'log/log_exps/log_{experiment_id}.txt', 'a+') as file:
+                        file.write(
+                            f"{versuch},{dict_body[versuch][probe]['Sample ID']},{dict_body[versuch][probe]['CPA ID']},{dict_body[versuch][probe]['Process ID']},{dict_body[versuch][probe]['PreData ID']},{dict_body[versuch][probe]['PostData ID']},{feed_to_neo_result} \n")
 
-            infos.append(feed_to_neo_result)
+                    infos.append(feed_to_neo_result)
         
         if all(element == 'success' for element in infos):
             return 'success'
@@ -64,8 +67,8 @@ def dict_to_neo_expriment(graph, dict_body, experiment_id):
             return 'see-error-detail'
 
     except Exception as e:
-        with open('log/log_load.txt', 'a+') as file:
-            file.write(
-                f"{datetime.datetime.now()} ERROR ON LOADING EXP DATA: {experiment_id}: {e} \n")
-
-        return 'error'
+       with open('log/log_load.txt', 'a+') as file:
+           file.write(
+               f"{datetime.datetime.now()} ERROR ON LOADING EXP DATA: {experiment_id}: {e} \n")
+    
+       return 'error'

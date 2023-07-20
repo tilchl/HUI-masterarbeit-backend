@@ -2,7 +2,7 @@ import datetime
 import os
 import pandas as pd
 from lib_load import load_cpa_data, load_pre_data, load_post_data, load_process_data, load_config_data, load_exp_data
-from lib_save import dict_to_neo_process, dict_to_neo_cpa, dict_to_neo_predata, dict_to_neo_postdata, dict_to_neo_exp, connect_to_db
+from lib_save import dict_to_neo_process, dict_to_neo_cpa, dict_to_neo_predata, dict_to_neo_postdata, dict_to_neo_expriment, connect_to_db
 
 
 GRAPH_CRYO = connect_to_db('cryo')
@@ -44,4 +44,4 @@ class FeedIntoNeo4j:
             return dict_to_neo_postdata(GRAPH_CRYO, loaded_data)
         elif self.data_type == 'exp':
             experiment_id = os.path.basename(self.data_path).split('.')[0]
-            return dict_to_neo_exp(GRAPH_CRYO, loaded_data, experiment_id)
+            return dict_to_neo_expriment(GRAPH_CRYO, loaded_data, experiment_id)
