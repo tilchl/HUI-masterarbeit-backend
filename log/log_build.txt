@@ -1,0 +1,45 @@
+2023-07-20 10:35:44.851137 SUCCESS Deleted folder: D:\ma_backend\data_store 
+2023-07-20 10:35:44.859138 SUCCESS Created data_store folder at D:\ma_backend\data_store 
+2023-07-20 10:35:44.861137 SUCCESS Created 'cpa' folder at D:\ma_backend\data_store\cpa 
+2023-07-20 10:35:44.862137 SUCCESS Created 'process' folder at D:\ma_backend\data_store\process 
+2023-07-20 10:35:44.864137 SUCCESS Created 'pre_data' folder at D:\ma_backend\data_store\pre_data 
+2023-07-20 10:35:44.866138 SUCCESS Created 'post_data' folder at D:\ma_backend\data_store\post_data 
+2023-07-20 10:35:44.868138 SUCCESS Created 'exp' folder at D:\ma_backend\data_store\exp 
+2023-07-20 10:35:44.876307 ERROR Created folder: D:\ma_backend\data_store/cpa: already exists 
+2023-07-20 10:35:44.877307 ERROR Created folder: D:\ma_backend\data_store/exp: already exists 
+2023-07-20 10:35:44.879424 ERROR Created folder: D:\ma_backend\data_store/pre_data: already exists 
+2023-07-20 10:35:44.881459 ERROR Created folder: D:\ma_backend\data_store/post_data: already exists 
+2023-07-20 10:35:44.884458 ERROR Created folder: D:\ma_backend\data_store/process: already exists 
+2023-07-20 10:35:45.003120 SUCCESS ON QUERY ALL: cryo 
+2023-07-20 10:35:45.028393 SUCCESS ON QUERY ALL: cpa 
+2023-07-20 10:35:59.118838 SUCCESS ON QUERY ALL: cryo 
+2023-07-20 10:35:59.125844 SUCCESS ON QUERY ALL: cpa 
+2023-07-20 10:36:00.675307 SUCCESS Deleted folder: D:\ma_backend\data_store/cpa 
+2023-07-20 10:36:00.697307 SUCCESS Deleted folder: D:\ma_backend\data_store/process 
+2023-07-20 10:36:00.697307 SUCCESS Deleted folder: D:\ma_backend\data_store/post_data 
+2023-07-20 10:36:00.699307 SUCCESS Deleted folder: D:\ma_backend\data_store/pre_data 
+2023-07-20 10:36:00.699307 SUCCESS Deleted folder: D:\ma_backend\data_store/exp 
+2023-07-20 10:36:00.700308 SUCCESS Created folder: D:\ma_backend\data_store/cpa 
+2023-07-20 10:36:00.707309 SUCCESS Created folder: D:\ma_backend\data_store/process 
+2023-07-20 10:36:00.710306 SUCCESS Created folder: D:\ma_backend\data_store/post_data 
+2023-07-20 10:36:00.714309 SUCCESS Created folder: D:\ma_backend\data_store/pre_data 
+2023-07-20 10:36:00.719305 SUCCESS Created folder: D:\ma_backend\data_store/exp 
+2023-07-20 10:37:38.468468 SUCCESS Deleted folder: D:\ma_backend\data_store/cpa 
+2023-07-20 10:37:38.492475 SUCCESS Deleted folder: D:\ma_backend\data_store/process 
+2023-07-20 10:37:38.494473 SUCCESS Deleted folder: D:\ma_backend\data_store/pre_data 
+2023-07-20 10:37:38.497475 SUCCESS Deleted folder: D:\ma_backend\data_store/post_data 
+2023-07-20 10:37:38.498473 SUCCESS Created folder: D:\ma_backend\data_store/cpa 
+2023-07-20 10:37:38.505997 SUCCESS Created folder: D:\ma_backend\data_store/process 
+2023-07-20 10:37:38.513997 SUCCESS Created folder: D:\ma_backend\data_store/pre_data 
+2023-07-20 10:37:38.518998 SUCCESS Created folder: D:\ma_backend\data_store/exp 
+2023-07-20 10:37:38.524998 SUCCESS Created folder: D:\ma_backend\data_store/post_data 
+2023-07-20 10:38:11.081594 SUCCESS Deleted folder: D:\ma_backend\data_store/cpa 
+2023-07-20 10:38:11.094597 SUCCESS Deleted folder: D:\ma_backend\data_store/process 
+2023-07-20 10:38:11.096592 SUCCESS Deleted folder: D:\ma_backend\data_store/pre_data 
+2023-07-20 10:38:11.097593 SUCCESS Deleted folder: D:\ma_backend\data_store/post_data 
+2023-07-20 10:38:11.097593 SUCCESS Deleted folder: D:\ma_backend\data_store/exp 
+2023-07-20 10:38:11.099593 SUCCESS Created folder: D:\ma_backend\data_store/cpa 
+2023-07-20 10:38:11.105594 SUCCESS Created folder: D:\ma_backend\data_store/process 
+2023-07-20 10:38:11.109605 SUCCESS Created folder: D:\ma_backend\data_store/pre_data 
+2023-07-20 10:38:11.113608 SUCCESS Created folder: D:\ma_backend\data_store/post_data 
+2023-07-20 10:38:11.118608 SUCCESS Created folder: D:\ma_backend\data_store/exp 

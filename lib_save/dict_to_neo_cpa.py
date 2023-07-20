@@ -22,12 +22,12 @@ def dict_to_neo_cpa(graph, dict_body):
         graph.create(Relationship(cpa_node, "visc_info_of_cpa", visc_node))
 
         with open('log/log_save.txt', 'a+') as file:
-            file.write(f"{datetime.datetime.now()} SUCCESS ON SAVING {ID} \n")
+            file.write(f"{datetime.datetime.now()} SUCCESS ON SAVING CPA {ID} \n")
         return 'success'
 
     except Exception as e:
         with open('log/log_save.txt', 'a+') as file:
-            file.write(f"{datetime.datetime.now()} ERROR ON SAVING {ID}: {e} \n")
+            file.write(f"{datetime.datetime.now()} ERROR ON SAVING CPA {ID}: {e} \n")
         if 'already exists' in str(e):
             return 'exists'
         else:
