@@ -3,31 +3,47 @@ import datetime
 
 
 def dict_to_neo_cpa(graph, dict_body):
-    try:
-        ID = dict_body['Center Node']["CPA ID"]
-        cpa_node = Node('CPA', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body['Center Node'].items()})
-        dsc_node = Node('DSC', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body['DSC'].items()})
-        ftir_node = Node('FTIR', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body['FTIR'].items()})
-        cryomicro_node = Node('Cryomicroscopy', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body['Cryomicroscopy'].items()})
-        osmo_node = Node('Osmolality', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body['Osmolality'].items()})
-        visc_node = Node('Viscosity', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body['Viscosity'].items()})
-        # cryomicro_node = Node('Cryomicroscopy')
-        # osmo_node = Node('Osmolality')
-        # visc_node = Node('Viscosity')
+    cpa_result = create_cpa(graph, dict_body)
+    if cpa_result == 'success':
+        children_result = []
+        for child in ['DSC', 'FTIR', 'Cryomicroscopy', 'Osmolality', 'Viscosity']:
+            children_result.append(create_relation_on_cpa(graph, dict_body, child))
+        if all(element == 'success' for element in children_result):
+            return 'success'
+        else:
+            return 'see-error-detail'
+    else:
+        return cpa_result
 
-        graph.create(Relationship(cpa_node, "dsc_info_of_cpa", dsc_node))
-        graph.create(Relationship(cpa_node, "ftir_info_of_cpa", ftir_node))
-        graph.create(Relationship(cpa_node, "cryomicro_info_of_cpa", cryomicro_node))
-        graph.create(Relationship(cpa_node, "osmo_info_of_cpa", osmo_node))
-        graph.create(Relationship(cpa_node, "visc_info_of_cpa", visc_node))
+def create_cpa(graph, dict_body):
+    try: 
+        cpa_node = Node('CPA', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body['Center Node'].items()})
+        graph.create(cpa_node)
 
         with open('log/log_save.txt', 'a+') as file:
-            file.write(f"{datetime.datetime.now()} SUCCESS ON SAVING CPA {ID} \n")
+            file.write(f"{datetime.datetime.now()} SUCCESS ON SAVING CPA {dict_body['Center Node']['CPA ID']} \n")
         return 'success'
-
+    
     except Exception as e:
         with open('log/log_save.txt', 'a+') as file:
-            file.write(f"{datetime.datetime.now()} ERROR ON SAVING CPA {ID}: {e} \n")
+            file.write(f"{datetime.datetime.now()} ERROR ON SAVING CPA {dict_body['Center Node']['CPA ID']}: {e} \n")
+        if 'already exists' in str(e):
+            return 'exists'
+        else:
+            return 'error'
+
+
+def create_relation_on_cpa(graph, dict_body, child):
+    try:
+        cpa_node = graph.nodes.match('CPA', CPA_ID = dict_body['Center Node']["CPA ID"]).first()
+        child_node = Node(child, **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body[child].items()})
+        graph.create(Relationship(cpa_node, f"{child}_of_CPA", child_node))
+        with open('log/log_save.txt', 'a+') as file:
+            file.write(f"{datetime.datetime.now()} SUCCESS ON SAVING {child}_of_CPA {dict_body['Center Node']['CPA ID']} \n")
+        return 'success'
+    except Exception as e:
+        with open('log/log_save.txt', 'a+') as file:
+            file.write(f"{datetime.datetime.now()} ERROR ON SAVING {child}_of_CPA {dict_body['Center Node']['CPA ID']}: {e} \n")
         if 'already exists' in str(e):
             return 'exists'
         else:

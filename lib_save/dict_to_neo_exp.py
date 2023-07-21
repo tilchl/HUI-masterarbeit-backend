@@ -30,11 +30,7 @@ def dict_to_neo_probe(graph, dict_body, versuch):
 
 def dict_to_neo_expriment(graph, dict_body, experiment_id):
     try:
-        experiment_node = Node('Experiment',Experiment_ID = experiment_id)
-        graph.create(experiment_node)
-        with open(f'log/log_exps/log_{experiment_id}.txt', 'w') as file:
-                file.write(str(dict_body)+
-                    "\nVersuch ID,Sample ID,CPA ID,Process ID,PreData ID,PostData ID,result\n")
+        experiment_result = create_experiment_node(graph, dict_body, experiment_id)
 
         infos = []
         for versuch in dict_body:
@@ -45,7 +41,6 @@ def dict_to_neo_expriment(graph, dict_body, experiment_id):
             versuch_node = graph.nodes.match('Versuch', Versuch_ID = dict_body[versuch]['Versuche ID']).first()
             graph.create(Relationship(versuch_node, 'versuch_of_experiment', experiment_node))
 
-
             for probe in dict_body[versuch]:
                 if probe == 'Versuche ID':
                     continue
@@ -55,7 +50,7 @@ def dict_to_neo_expriment(graph, dict_body, experiment_id):
                             f"{datetime.datetime.now()} SUCCESS ON LOADING PROBE DATA: {dict_body[versuch][probe]['Sample ID']} \n")
                     
                     feed_to_neo_result = dict_to_neo_probe(graph, dict_body[versuch][probe], dict_body[versuch]['Versuche ID'])
-                    with open(f'log/log_exps/log_{experiment_id}.txt', 'a+') as file:
+                    with open(f'log/log_exps/log_{dict_body["Experiment ID"]}.txt', 'a+') as file:
                         file.write(
                             f"{versuch},{dict_body[versuch][probe]['Sample ID']},{dict_body[versuch][probe]['CPA ID']},{dict_body[versuch][probe]['Process ID']},{dict_body[versuch][probe]['PreData ID']},{dict_body[versuch][probe]['PostData ID']},{feed_to_neo_result} \n")
 
@@ -72,3 +67,22 @@ def dict_to_neo_expriment(graph, dict_body, experiment_id):
                f"{datetime.datetime.now()} ERROR ON LOADING EXP DATA: {experiment_id}: {e} \n")
     
        return 'error'
+    
+def create_experiment_node(graph, dict_body, experiment_id):
+    try:
+        experiment_node = Node('Experiment',Experiment_ID = experiment_id)
+        graph.create(experiment_node)
+        with open('log/log_save.txt', 'a+') as file:
+            file.write(f"{datetime.datetime.now()} SUCCESS ON CREATE EXPERIMENT {experiment_id} \n")
+
+        with open(f'log/log_exps/log_{dict_body["Experiment ID"]}.txt', 'w') as file:
+                file.write(str(dict_body)+
+                    "\nVersuch ID,Sample ID,CPA ID,Process ID,PreData ID,PostData ID,result\n")
+        return 'success'
+    except Exception as e:
+        with open('log/log_save.txt', 'a+') as file:
+            file.write(f"{datetime.datetime.now()} ERROR ON CREATE EXPERIMENT {experiment_id}: {e} \n")
+        if 'already exists' in str(e):
+            return 'exists'
+        else:
+            return 'error'
