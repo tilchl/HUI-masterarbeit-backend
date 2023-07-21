@@ -18,7 +18,7 @@ class BuildDataStore:
                     file.write(
                         f"{datetime.datetime.now()} SUCCESS Created {self.dir_name} folder at {data_store_dir} \n")
 
-                subfolders = ['cpa', 'process', 'pre_data', 'post_data', 'exp']
+                subfolders = ['CPA', 'Process', 'PreData', 'PostData', 'Experiment']
                 for subfolder in subfolders:
                     folder_path = os.path.join(data_store_dir, subfolder)
                     if not os.path.exists(folder_path):

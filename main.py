@@ -101,7 +101,7 @@ def seeLog(log_id):
 @app.post("/fileUpload/")
 async def fileUpload(files: list[UploadFile], data_type, data_store):
     res = []
-    if data_type == 'cpa':
+    if data_type == 'CPA':
         for file in files:
             file_name = "/".join(file.filename.split("/")[-3:])
             upload_result = data_receiver(f'{data_store}/{data_type}/{file_name}', await file.read(), data_type)
@@ -116,7 +116,7 @@ async def fileUpload(files: list[UploadFile], data_type, data_store):
 @app.post("/fileCreate/")
 async def fileCreate(files: list[UploadFile], data_type, data_store):
     res = []
-    if data_type == 'cpa':
+    if data_type == 'CPA':
         for file in files:
             file_name = "/".join(file.filename.split("/")[-3:])
             upload_result = data_receiver(f'{data_store}/{data_type}/{file_name}', dict_to_txt(await file.read(), data_type, file_name), data_type)
@@ -131,9 +131,9 @@ async def fileCreate(files: list[UploadFile], data_type, data_store):
 @app.get("/feedInNeo/")
 def feedInNeo(data_type, file_name, data_store):
     try:
-        if data_type == 'cpa':
+        if data_type == 'CPA':
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name.split("/")[0]}').feed_to_neo4j()
-        elif data_type == 'exp':
+        elif data_type == 'Experiment':
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name.split("/")[0]}').feed_to_neo4j()
         else:
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
@@ -146,7 +146,12 @@ UNIQUE_ID = {
         'PostData': 'Sample_ID',
         'Experiment': 'Experiment_ID',
         'Process': 'Process_ID',
-        'CPA': 'CPA_ID'
+        'CPA': 'CPA_ID',
+        'DSC': 'File_ID',
+        'FTIR': 'File_ID',
+        'Cryomicroscopy': 'File_ID',
+        'Osmolality': 'File_ID',
+        'Viscosity': 'File_ID',
     }
 
 @app.get("/queryOneType/")
@@ -167,3 +172,12 @@ def queryOneNode(data_type, ID):
     else:
         result = GRAPH_CPA.run(query).data()
     return result[0]['p']
+
+@app.get("/duplicateCheck/")
+def duplicateCheck(data_type, ID):
+    query = f'MATCH (p:{data_type}) WHERE p.{UNIQUE_ID[data_type]} = "{ID}" RETURN COUNT(p) > 0'
+    if data_type in ['PreData', 'PostData', 'Experiment']:
+        result = GRAPH_CRYO.run(query).data()
+    else:
+        result = GRAPH_CPA.run(query).data()
+    return result[0]["COUNT(p) > 0"]

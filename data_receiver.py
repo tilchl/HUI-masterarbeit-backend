@@ -5,7 +5,7 @@ import ast
 
 def data_receiver(save_path, contents, data_type):
     try: 
-        if data_type == 'cpa':
+        if data_type == 'CPA':
             if len(save_path.split('/')) != 5:
                 with open('log/log_upload.txt', 'a+') as file:
                     file.write(f"{datetime.datetime.now()} ERROR ON UPLOADING: {save_path}: path error \n")
@@ -31,7 +31,7 @@ def data_receiver(save_path, contents, data_type):
 def dict_to_txt(dict_form_str_data, data_type, file_name):
     try:
         dict_data = json.loads(dict_form_str_data)
-        if data_type == 'exp':
+        if data_type == 'Experiment':
             content = '{'
             for key, value in dict_data.items():
                 content+=(f'"{key}": {value},')
