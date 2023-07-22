@@ -32,11 +32,11 @@ def dict_to_txt(dict_form_str_data, data_type, file_name):
     try:
         dict_data = json.loads(dict_form_str_data)
         if data_type == 'Experiment':
-            content = '{'
-            for key, value in dict_data.items():
-                content+=(f'"{key}": {value},')
-            content = content[:-1] + "}"
-            return content.replace("'", '"').encode('utf-8')
+        #     content = '{'
+        #     for key, value in dict_data.items():
+        #         content+=(f'"{key}": {value},')
+        #     content = content[:-1] + "}"
+            return str(dict_data).replace("'", '"').encode('utf-8')
         else:
             content = ''
             for key, value in dict_data.items():

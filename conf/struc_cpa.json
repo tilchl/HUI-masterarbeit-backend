@@ -3,7 +3,7 @@
         "CPA ID": null
     },
     "DSC": {
-        "File ID": null,
+        "DSC ID": null,
         "Curve": {
             "Temp./\u00b0C": [],
             "Time/min": [],
@@ -13,7 +13,7 @@
         }
     },
     "FTIR": {
-        "File ID": null,
+        "FTIR ID": null,
         "Curve": {
             "Wavenumber/cm^-1": [],
             "Absorbance/A": []

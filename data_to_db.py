@@ -35,7 +35,8 @@ class FeedIntoNeo4j:
     def feed_to_neo4j(self):
         loaded_data = self.load_one()
         if self.data_type == 'CPA':
-            return dict_to_neo_cpa(GRAPH_CPA, loaded_data)
+            child = self.data_path.split('/')[3]
+            return dict_to_neo_cpa(GRAPH_CPA, loaded_data, child)
         elif self.data_type == 'Process':
             return dict_to_neo_process(GRAPH_CPA, loaded_data)
         elif self.data_type == 'PreData':
@@ -43,5 +44,4 @@ class FeedIntoNeo4j:
         elif self.data_type == 'PostData':
             return dict_to_neo_postdata(GRAPH_CRYO, loaded_data)
         elif self.data_type == 'Experiment':
-            experiment_id = os.path.basename(self.data_path).split('.')[0]
-            return dict_to_neo_expriment(GRAPH_CRYO, loaded_data, experiment_id)
+            return dict_to_neo_expriment(GRAPH_CRYO, loaded_data)

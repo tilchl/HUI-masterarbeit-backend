@@ -6,7 +6,8 @@ def load_dsc_data(data_path, dict_body):
     try:
         if os.path.exists(data_path):
             with open(data_path, "r") as file:
-                dict_body['File ID'] = os.path.basename(data_path).rsplit('.',1)[0]
+                dict_body['DSC ID'] = os.path.basename(data_path).rsplit('.',1)[0]
+
                 lines = file.readlines()
                 for line in lines:
                     line = line.strip()

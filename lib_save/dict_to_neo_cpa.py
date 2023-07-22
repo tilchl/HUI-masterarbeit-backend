@@ -2,16 +2,10 @@ from py2neo import Relationship, Node
 import datetime
 
 
-def dict_to_neo_cpa(graph, dict_body):
+def dict_to_neo_cpa(graph, dict_body, child):
     cpa_result = create_cpa(graph, dict_body)
-    if cpa_result == 'success':
-        children_result = []
-        for child in ['DSC', 'FTIR', 'Cryomicroscopy', 'Osmolality', 'Viscosity']:
-            children_result.append(create_relation_on_cpa(graph, dict_body, child))
-        if all(element == 'success' for element in children_result):
-            return 'success'
-        else:
-            return 'see-error-detail'
+    if cpa_result == 'success' or 'exists':
+        return create_relation_on_cpa(graph, dict_body, child)
     else:
         return cpa_result
 

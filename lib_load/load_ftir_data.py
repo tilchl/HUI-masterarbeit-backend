@@ -5,7 +5,7 @@ import os
 def load_ftir_data(data_path, dict_body):
     try:
         if os.path.exists(data_path):
-            dict_body['File ID'] = os.path.basename(data_path).rsplit('.',1)[0]
+            dict_body['FTIR ID'] = os.path.basename(data_path).rsplit('.',1)[0]
             read_data = False
 
             with open(data_path, "r", encoding='utf-8') as file:
