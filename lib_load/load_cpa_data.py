@@ -8,12 +8,12 @@ import datetime
 import os
 
 
-translate = {
-    'dsc': 'DSC',
-    'ftir': 'FTIR',
-    'osmo': 'Osmolality',
-    'cryomicro': 'Cryomicroscopy',
-    'visc': 'Viscosity'
+functions = {
+    'DSC': load_dsc_data,
+    'FTIR': load_ftir_data,
+    'Osmolality': load_osmo_data,
+    'Cryomicroscopy': load_cryomicro_data,
+    'Viscosity': load_visc_data
 }
 
 
@@ -22,7 +22,7 @@ def load_cpa_data(data_path, dict_body):
         cpa_id = data_path.split('/')[2]
         dict_body["Center Node"]["CPA ID"] = cpa_id
         child = data_path.split('/')[3]
-        dict_body[child] = load_dsc_data(data_path, dict_body[child])
+        dict_body[child] = functions[child](data_path, dict_body[child])
 
         with open('log/log_load.txt', 'a+') as file:
             file.write(

@@ -37,6 +37,37 @@ def dict_to_txt(dict_form_str_data, data_type, file_name):
         #         content+=(f'"{key}": {value},')
         #     content = content[:-1] + "}"
             return str(dict_data).replace("'", '"').encode('utf-8')
+        elif data_type == 'CPA':
+            cpa_type = file_name.split('/')[1]
+            if cpa_type == 'DSC':
+                content = ''
+                curve_content = ''
+                for key, value in dict_data.items():
+                    if key == 'Curve':
+                        curve_content = '\n##' + value
+                    else:
+                        content+=(f'{key}: {value}\n')
+                content+= curve_content
+            elif cpa_type == 'FTIR':
+                content = '#DATA\n'
+                curve_content = ''
+                for key, value in dict_data.items():
+                    if key == 'Curve':
+                        curve_content = '\n##' + value.replace(';', '\t')
+                    else:
+                        content+=(f'{key}: {value}\n')
+                content+= curve_content
+            else:
+                content = ''
+                curve_content = ''
+                for key, value in dict_data.items():
+                    if key == 'Curve':
+                        curve_content = '\n##' + value
+                    else:
+                        content+=(f'{key}: {value}\n')
+                content+= curve_content
+            return content.encode('utf-8')
+
         else:
             content = ''
             for key, value in dict_data.items():

@@ -1,23 +1,34 @@
 import datetime
 import os
 
-
 def load_dsc_data(data_path, dict_body):
     try:
         if os.path.exists(data_path):
-            with open(data_path, "r") as file:
-                dict_body['DSC ID'] = os.path.basename(data_path).rsplit('.',1)[0]
-
+            dict_body['DSC ID'] = os.path.basename(data_path).rsplit('.',1)[0]
+            curve_head = []
+            with open(data_path, "r", encoding="utf-8", errors='replace') as file:
                 lines = file.readlines()
                 for line in lines:
+                    if '##' in line:
+                        line = line.strip()[2:]
+                        curve_head = line.split(';')
+                        break
+            with open(data_path, "r", encoding="utf-8", errors='replace') as file:
+                for line in lines:        
                     line = line.strip()
-                    if line != "" and '#' not in line:
-                        te, ti, dsc, sen, seg = line.split(";")
-                        dict_body['Curve']["Temp./\u00b0C"].append(te.strip())
-                        dict_body['Curve']["Time/min"].append(ti.strip())
-                        dict_body['Curve']["DSC/(mW/mg)"].append(dsc.strip())
-                        dict_body['Curve']["Sensit./(uV/mW)"].append(sen.strip())
-                        dict_body['Curve']["Segment"].append(seg.strip())
+                    if line != "":
+                        if ';' in line and '#' not in line:
+                            for i, point in enumerate(line.split(";")):
+                                dict_body['Curve'][curve_head[i].replace('\ufffd', '\u00b0')].append(point.strip())
+                        elif ':' in line:
+                            key, value = line.split(":", 1)
+                            key = key.strip()
+                            if key[0] == '#':
+                                key = key[1:]
+                            value = value.strip()
+                            # if key in dict_body.keys():
+                            dict_body[key] = value
+                        
 
             with open('log/log_load.txt', 'a+') as file:
                 file.write(
