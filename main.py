@@ -19,22 +19,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def read_root():
     return 'success'
 
+
 GRAPH_CRYO = connect_to_db('cryo')
 GRAPH_CPA = connect_to_db('cpa')
+
 
 @app.get("/freeQueryCryo/{query}")
 def freeQueryCryo(query):
     query = urllib.parse.unquote(query)
     return GRAPH_CRYO.run(query).data()
 
+
 @app.get("/freeQueryCpa/{query}")
 def freeQueryCpa(query):
     query = urllib.parse.unquote(query)
     return GRAPH_CPA.run(query).data()
+
 
 @app.get("/cleanDatabase/{db_id}")
 def cleanDatabase(db_id):
@@ -43,6 +48,7 @@ def cleanDatabase(db_id):
     elif db_id == 'cpa':
         BuildDatabase(GRAPH_CPA, 'cpa').delete_all()
     return f'SUCCESS: DATABASE {db_id} CLEANED'
+
 
 @app.get("/initDatabase/{db_id}")
 def initDatabase(db_id):
@@ -54,36 +60,43 @@ def initDatabase(db_id):
         BuildDatabase(GRAPH_CPA, 'cpa').add_constraint()
     return f'SUCCESS: DATABASE {db_id} INIT'
 
+
 @app.get("/connectDatabase/{db_id}")
 def connectDatabase(db_id):
     if db_id == 'cryo':
         return BuildDatabase(GRAPH_CRYO, 'cryo').query_all()
     elif db_id == 'cpa':
         return BuildDatabase(GRAPH_CPA, 'cpa').query_all()
-    
+
+
 @app.get("/findIsolatedNodes/{db_id}")
 def findIsolatedNodes(db_id):
     if db_id == 'cryo':
         return BuildDatabase(GRAPH_CRYO, 'cryo').find_isolated_nodes()
     elif db_id == 'cpa':
         return BuildDatabase(GRAPH_CPA, 'cpa').find_isolated_nodes()
-    
+
+
 @app.get("/buildDataStore/{store_name}")
 def buildDataStore(store_name):
     return BuildDataStore(store_name).create_data_store_folder()
-    
+
+
 @app.get("/deleteDataStore/{store_name}")
 def deleteDataStore(store_name):
     return BuildDataStore(store_name).delete_folder()
+
 
 @app.get("/deleteOneType/")
 def deleteOneType(store_name, data_type):
     return BuildDataStore(store_name).delete_one_type(data_type)
 
+
 @app.get("/buildOneType/")
 def buildOneType(store_name, data_type):
     return BuildDataStore(store_name).create_one_type(data_type)
-            
+
+
 @app.get("/cleanLog/{log_id}")
 def cleanLog(log_id):
     try:
@@ -93,10 +106,12 @@ def cleanLog(log_id):
         return (f"Cleared file: {file_path}")
     except Exception as e:
         return 'error'
-    
+
+
 @app.get("/seeLog/{log_id}")
 def seeLog(log_id):
     pass
+
 
 @app.post("/fileUpload/")
 async def fileUpload(files: list[UploadFile], data_type, data_store):
@@ -105,14 +120,17 @@ async def fileUpload(files: list[UploadFile], data_type, data_store):
         for file in files:
             file_name = "/".join(file.filename.split("/")[-3:])
             upload_result = data_receiver(f'{data_store}/{data_type}/{file_name}', await file.read(), data_type)
-            res.append({'file_name':file_name, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
+            res.append({'file_name': file_name, 'result': upload_result,
+                       'neo4j': 'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
     else:
         for file in files:
             upload_result = data_receiver(f'{data_store}/{data_type}/{file.filename}', await file.read(), data_type)
-            res.append({'file_name':file.filename, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
+            res.append({'file_name': file.filename, 'result': upload_result,
+                       'neo4j': 'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
-    
+
+
 @app.post("/fileCreate/")
 async def fileCreate(files: list[UploadFile], data_type, data_store):
     res = []
@@ -120,13 +138,16 @@ async def fileCreate(files: list[UploadFile], data_type, data_store):
         for file in files:
             file_name = "/".join(file.filename.split("/")[-3:])
             upload_result = data_receiver(f'{data_store}/{data_type}/{file_name}', dict_to_txt(await file.read(), data_type, file_name), data_type)
-            res.append({'file_name':file_name, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
+            res.append({'file_name': file_name, 'result': upload_result,
+                       'neo4j': 'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
     else:
         for file in files:
             upload_result = data_receiver(f'{data_store}/{data_type}/{file.filename}', dict_to_txt(await file.read(), data_type, file.filename), data_type)
-            res.append({'file_name':file.filename, 'result':upload_result, 'neo4j':'waiting' if upload_result == 'success' else 'undo'})
+            res.append({'file_name': file.filename, 'result': upload_result,
+                       'neo4j': 'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
+
 
 @app.get("/feedInNeo/")
 def feedInNeo(data_type, file_name, data_store):
@@ -137,22 +158,24 @@ def feedInNeo(data_type, file_name, data_store):
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
         else:
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
-    
+
     except Exception as e:
-       return 'error'
-    
+        return 'error'
+
+
 UNIQUE_ID = {
-        'PreData': 'Sample_ID',
-        'PostData': 'Sample_ID',
-        'Experiment': 'Experiment_ID',
-        'Process': 'Process_ID',
-        'CPA': 'CPA_ID',
-        'DSC': 'File_ID',
-        'FTIR': 'File_ID',
-        'Cryomicroscopy': 'File_ID',
-        'Osmolality': 'File_ID',
-        'Viscosity': 'File_ID',
-    }
+    'PreData': 'Sample_ID',
+    'PostData': 'Sample_ID',
+    'Experiment': 'Experiment_ID',
+    'Process': 'Process_ID',
+    'CPA': 'CPA_ID',
+    'DSC': 'DSC_ID',
+    'FTIR': 'FTIR_ID',
+    'Cryomicroscopy': 'Cryomicroscopy_ID',
+    'Osmolality': 'Osmolality_ID',
+    'Viscosity': 'Viscosity_ID',
+}
+
 
 @app.get("/queryOneType/")
 def queryOneType(data_type):
@@ -164,6 +187,7 @@ def queryOneType(data_type):
 
     return str(sorted(result[0]['idList'])).replace("'", '"')
 
+
 @app.get("/queryOneNode/")
 def queryOneNode(data_type, ID):
     query = f'MATCH (p:{data_type}) WHERE p.{UNIQUE_ID[data_type]} = "{ID}" RETURN p'
@@ -173,6 +197,7 @@ def queryOneNode(data_type, ID):
         result = GRAPH_CPA.run(query).data()
     return result[0]['p']
 
+
 @app.get("/duplicateCheck/")
 def duplicateCheck(data_type, ID):
     query = f'MATCH (p:{data_type}) WHERE p.{UNIQUE_ID[data_type]} = "{ID}" RETURN COUNT(p) > 0'
@@ -181,3 +206,33 @@ def duplicateCheck(data_type, ID):
     else:
         result = GRAPH_CPA.run(query).data()
     return result[0]["COUNT(p) > 0"]
+
+
+@app.get("/queryOneExperiment/{ID}")
+def queryOneExperiment(ID):
+    query = f'MATCH(experiment: Experiment)\
+              WHERE experiment.Experiment_ID = "{ID}"\
+              OPTIONAL MATCH (experiment: Experiment)<-[:versuch_of_experiment]-(second: Versuch)\
+              OPTIONAL MATCH (second)<-[:probe_of_versuch*..1]-(third:Probe)\
+              WITH experiment, second, COLLECT(DISTINCT third) as thirdNodes\
+              RETURN experiment, COLLECT({{versuchs: second, probes: thirdNodes}}) as child'
+    result = GRAPH_CRYO.run(query).data()
+    return result[0]
+
+@app.get("/queryOneCPA/{ID}")
+def queryOneCPA(ID):
+    query = f"MATCH (cpa:CPA {{CPA_ID: '{ID}'}})\
+              OPTIONAL MATCH (cpa:CPA {{CPA_ID: '{ID}'}})-[*..1]->(c)\
+              WITH cpa, c,\
+                CASE labels(c)[0]\
+                    WHEN 'DSC' THEN c.DSC_ID\
+                    WHEN 'FTIR' THEN c.FTIR_ID\
+                    WHEN 'Cryomicroscopy' THEN c.Cryomicroscopy_ID\
+                    WHEN 'Osmolality' THEN c.Osmolality_ID\
+                    WHEN 'Viscosity' THEN c.Viscosity_ID\
+                END AS attribute_value\
+              RETURN cpa, COLLECT({{class: labels(c)[0], unique_id:attribute_value}}) AS child"
+    
+    
+    result = GRAPH_CPA.run(query).data()
+    return result

@@ -37,11 +37,11 @@ class BuildDatabase:
             elif self.db_id == 'cpa':
                 self.graph.run(f'CREATE CONSTRAINT FOR (n: CPA) REQUIRE n.CPA_ID IS UNIQUE')
                 self.graph.run(f'CREATE CONSTRAINT FOR (n: Process) REQUIRE n.Process_ID IS UNIQUE')
-                self.graph.run(f'CREATE CONSTRAINT FOR (n: DSC) REQUIRE n.File_ID IS UNIQUE')
-                self.graph.run(f'CREATE CONSTRAINT FOR (n: FTIR) REQUIRE n.File_ID IS UNIQUE')
-                self.graph.run(f'CREATE CONSTRAINT FOR (n: Cryomicroscopy) REQUIRE n.File_ID IS UNIQUE')
-                self.graph.run(f'CREATE CONSTRAINT FOR (n: Osmolality) REQUIRE n.File_ID IS UNIQUE')
-                self.graph.run(f'CREATE CONSTRAINT FOR (n: Viscosity) REQUIRE n.File_ID IS UNIQUE')
+                self.graph.run(f'CREATE CONSTRAINT FOR (n: DSC) REQUIRE n.DSC_ID IS UNIQUE')
+                self.graph.run(f'CREATE CONSTRAINT FOR (n: FTIR) REQUIRE n.FTIR_ID IS UNIQUE')
+                self.graph.run(f'CREATE CONSTRAINT FOR (n: Cryomicroscopy) REQUIRE n.Cryomicroscopy_ID IS UNIQUE')
+                self.graph.run(f'CREATE CONSTRAINT FOR (n: Osmolality) REQUIRE n.Osmolality_ID IS UNIQUE')
+                self.graph.run(f'CREATE CONSTRAINT FOR (n: Viscosity) REQUIRE n.Viscosity_ID IS UNIQUE')
 
             with open('log/log_build.txt', 'a+') as file:
                 file.write(
