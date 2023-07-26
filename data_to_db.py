@@ -44,4 +44,5 @@ class FeedIntoNeo4j:
         elif self.data_type == 'PostData':
             return dict_to_neo_postdata(GRAPH_CRYO, loaded_data)
         elif self.data_type == 'Experiment':
-            return dict_to_neo_expriment(GRAPH_CRYO, loaded_data)
+            experiment_id = os.path.basename(self.data_path).rsplit(".",1)[0]
+            return dict_to_neo_expriment(GRAPH_CRYO, loaded_data, experiment_id)
