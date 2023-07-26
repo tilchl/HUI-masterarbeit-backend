@@ -215,7 +215,7 @@ def queryOneExperiment(ID):
               OPTIONAL MATCH (experiment: Experiment)<-[:versuch_of_experiment]-(second: Versuch)\
               OPTIONAL MATCH (second)<-[:probe_of_versuch*..1]-(third:Probe)\
               WITH experiment, second, COLLECT(DISTINCT third) as thirdNodes\
-              RETURN experiment, COLLECT({{versuchs: second, probes: thirdNodes}}) as child'
+              RETURN experiment, COLLECT({{versuch: second, probes: thirdNodes}}) as child'
     result = GRAPH_CRYO.run(query).data()
     return result[0]
 
