@@ -1,4 +1,6 @@
+import ast
 import os
+import statistics
 from fastapi import FastAPI, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import json
@@ -236,3 +238,16 @@ def queryOneCPA(ID):
     
     result = GRAPH_CPA.run(query).data()
     return result[0]
+
+
+@app.get("/getMeanAndVariance/{data}")
+def getMeanAndVariance(data):
+    data = urllib.parse.unquote(data)
+    data = ast.literal_eval(data)
+    data = [float(item) for item in data]
+    mean_value = statistics.mean(data)
+    if len(data) > 1:
+        variance_value = statistics.variance(data)
+    else:
+        variance_value = 0.0000
+    return f"{mean_value:.4f} ({variance_value:.4f})"

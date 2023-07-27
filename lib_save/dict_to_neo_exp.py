@@ -8,12 +8,13 @@ def dict_to_neo_probe(graph, dict_body, ExpVer_id):
         probe_node = Node('Probe',**{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in dict_body.items()}, Unique_ID=f"{ExpVer_id}*-*{dict_body['Sample ID']}")
 
         versuch_node = graph.nodes.match('Versuch', Unique_ID = ExpVer_id).first()
-        predata_node = graph.nodes.match('PreData', Sample_ID = dict_body['PreData ID']).first()
-        postdata_node = graph.nodes.match('PostData', Sample_ID = dict_body['PostData ID']).first()
-
         graph.create(Relationship(probe_node, 'probe_of_versuch', versuch_node))
-        graph.create(Relationship(predata_node, 'pre_data_of_probe', probe_node))
-        graph.create(Relationship(postdata_node, 'post_data_of_probe', probe_node))
+        for pre_id in dict_body['PreData ID']:
+            predata_node = graph.nodes.match('PreData', Sample_ID = pre_id).first()
+            graph.create(Relationship(predata_node, 'pre_data_of_probe', probe_node))
+        for post_id in dict_body['PostData ID']:
+            postdata_node = graph.nodes.match('PostData', Sample_ID = post_id).first()
+            graph.create(Relationship(postdata_node, 'post_data_of_probe', probe_node))
 
         with open(f'log/log_exps/log_{ExpVer_id.split("*-*")[0]}.txt', 'a+') as file:
             file.write(f"{datetime.datetime.now()} SUCCESS ON SAVING PROBE {ID} OF {ExpVer_id} \n")
