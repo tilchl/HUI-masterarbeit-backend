@@ -1,6 +1,7 @@
 import ast
 import os
-import statistics
+import numpy as np
+from scipy import stats
 from fastapi import FastAPI, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import json
@@ -221,6 +222,7 @@ def queryOneExperiment(ID):
     result = GRAPH_CRYO.run(query).data()
     return result[0]
 
+
 @app.get("/queryOneCPA/{ID}")
 def queryOneCPA(ID):
     query = f"MATCH (cpa:CPA {{CPA_ID: '{ID}'}})\
@@ -234,8 +236,7 @@ def queryOneCPA(ID):
                     WHEN 'Viscosity' THEN c.Viscosity_ID\
                 END AS attribute_value\
               RETURN cpa, COLLECT({{class: labels(c)[0], unique_id:attribute_value}}) AS child"
-    
-    
+
     result = GRAPH_CPA.run(query).data()
     return result[0]
 
@@ -245,9 +246,47 @@ def getMeanAndVariance(data):
     data = urllib.parse.unquote(data)
     data = ast.literal_eval(data)
     data = [float(item) for item in data]
-    mean_value = statistics.mean(data)
-    if len(data) > 1:
-        variance_value = statistics.variance(data)
-    else:
-        variance_value = 0.0000
-    return f"{mean_value:.4f} ({variance_value:.4f})"
+    mean = np.mean(data)
+    variance = np.var(data, ddof=1)
+    standard_deviation = np.std(data, ddof=1)
+    standard_error = standard_deviation / np.sqrt(len(data))
+    confidence_level = 0.95
+    n = len(data)
+    confidence_interval = stats.t.interval(
+        confidence_level, df=n-1, loc=mean, scale=standard_error)
+
+    if n == 1:
+        variance = standard_deviation = standard_error = 0.0000
+        confidence_interval = (0.00, 0.00)
+    return {
+        "mean": f"{mean:.4f}",
+        "variance": f"{variance:.4f}",
+        "SD": f"{standard_deviation:.4f}",
+        "SE": f"{standard_error:.4f}",
+        f"CI {confidence_level * 100:.0f}%": f"[{confidence_interval[0]:.2f}, {confidence_interval[1]:.2f}]"
+    }
+
+
+@app.get("/buildColumn/")
+def buildColumn(predata, postdata, key):
+    predata = urllib.parse.unquote(predata)
+    predata = ast.literal_eval(predata)
+    postdata = urllib.parse.unquote(postdata)
+    postdata = ast.literal_eval(postdata)
+
+    query_pre = f"MATCH (n:PreData)\
+              WHERE n.Sample_ID IN {str(predata)}\
+              RETURN COLLECT(n.`{key}`) AS data"
+
+    query_post = f"MATCH (n:PostData)\
+              WHERE n.Sample_ID IN {str(postdata)}\
+              RETURN COLLECT(n.`{key}`) AS data"
+
+    result_pre = GRAPH_CRYO.run(query_pre).data()[0]['data']
+    result_post = GRAPH_CRYO.run(query_post).data()[0]['data']
+
+    
+    return {
+        "pre_data": getMeanAndVariance(str(result_pre)),
+        "post_data": getMeanAndVariance(str(result_post))
+    }
