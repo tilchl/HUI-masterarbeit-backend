@@ -3,5 +3,3 @@ uvicorn==0.22.0
 py2neo==2021.2.3
 python-multipart==0.0.6
 pandas==2.0.3
-scipy==1.10.0
-statsmodels==0.14.0

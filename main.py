@@ -1,7 +1,3 @@
-import pandas
-from scipy.stats import ttest_ind
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
-from scipy.stats import f_oneway
 import ast
 import os
 import numpy as np
@@ -289,58 +285,8 @@ def buildColumn(predata, postdata, key):
     result_pre = GRAPH_CRYO.run(query_pre).data()[0]['data']
     result_post = GRAPH_CRYO.run(query_post).data()[0]['data']
 
+    
     return {
         "pre_data": getMeanAndVariance(str(result_pre)),
         "post_data": getMeanAndVariance(str(result_post))
-    }
-
-
-@app.get("/buildAnovaTable/")
-def buildAnovaTable(postdata, key):
-    postdata = urllib.parse.unquote(postdata)
-    postdata = ast.literal_eval(postdata)
-    for _key in list(postdata.keys()):
-        query_post = f"MATCH (n:PostData)\
-              WHERE n.Sample_ID IN {str(postdata[_key])}\
-              RETURN COLLECT(n.`{key}`) AS data"
-        postdata[_key] = GRAPH_CRYO.run(query_post).data()[0]['data']
-
-    return anovaTest(str(postdata))
-
-
-@app.get("/anovaTest/{daten}")
-def anovaTest(daten):
-    daten = urllib.parse.unquote(daten)
-    daten = ast.literal_eval(daten)
-    # data_dict = ast.literal_eval(data_str)
-    # print(data_dict)
-    keys = list(daten.keys())
-    data = list(daten.values())
-
-    result = {}
-
-    # ANOVA
-    f_statistic, p_value = f_oneway(*data)
-
-    result["F-statistic"] = f_statistic
-    result["p-value"] = p_value
-    # Tukey's HSD
-    tukey_results = pairwise_tukeyhsd([float(n) for n in np.concatenate(data)], np.repeat(keys, [len(d) for d in data]), 0.05)
-    df = pandas.DataFrame(
-        data=tukey_results._results_table.data[1:], columns=tukey_results._results_table.data[0])
-    result["Tukey HSD 0.05"] = list(df.to_dict(orient='index').values())
-
-    return result
-
-
-@app.get("/tTest/")
-def tTest(data1, data2, alpha=0.05):
-    t_statistic, p_value = ttest_ind(data1, data2)
-
-    is_significant = p_value < alpha
-
-    return {
-        "t_statistic": t_statistic,
-        "p_value": p_value,
-        "is_significant": is_significant
     }
