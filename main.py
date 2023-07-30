@@ -322,8 +322,8 @@ def anovaTest(daten):
     # ANOVA
     f_statistic, p_value = f_oneway(*data)
 
-    result["F-statistic"] = f_statistic
-    result["p-value"] = p_value
+    result["F-statistic"] = round(f_statistic, 4)
+    result["p-value"] = round(p_value, 4)
     # Tukey's HSD
     tukey_results = pairwise_tukeyhsd([float(n) for n in np.concatenate(data)], np.repeat(keys, [len(d) for d in data]), 0.05)
     df = pandas.DataFrame(
