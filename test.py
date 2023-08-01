@@ -1,3 +1,4 @@
+from scipy.stats import ttest_ind
 import random
 from data_to_db import FeedIntoNeo4j
 from main import *
@@ -27,10 +28,11 @@ import numpy as np
 from scipy.stats import f_oneway
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
+
 def perform_anova(daten):
     keys = list(daten.keys())
-    data =list(daten.values())
-  
+    data = list(daten.values())
+
     result = {}
 
     # ANOVA
@@ -40,7 +42,8 @@ def perform_anova(daten):
     result["p-value"] = p_value
 
     # Tukey's HSD
-    tukey_results = pairwise_tukeyhsd(np.concatenate(data), np.repeat(keys, [len(d) for d in data]), 0.05)
+    tukey_results = pairwise_tukeyhsd(np.concatenate(
+        data), np.repeat(keys, [len(d) for d in data]), 0.05)
 
     result["Tukey HSD"] = tukey_results
 
@@ -49,22 +52,79 @@ def perform_anova(daten):
 
 daten = {
     'data_A': np.random.normal(np.random.uniform(0, 10), np.random.uniform(1, 3), 10),
-'data_B': np.random.normal(np.random.uniform(0, 10), np.random.uniform(1, 3), 10),
-'data_C': np.random.normal(np.random.uniform(0, 10), np.random.uniform(1, 3), 10)
+    'data_B': np.random.normal(np.random.uniform(0, 10), np.random.uniform(1, 3), 10),
+    'data_C': np.random.normal(np.random.uniform(0, 10), np.random.uniform(1, 3), 10)
 }
 
 result = perform_anova(daten)
 print(result['Tukey HSD'])
 
 
-from scipy.stats import ttest_ind
+# def independent_ttest(data1, data2, alpha=0.05):
+#     t_statistic, p_value = ttest_ind(data1, data2)
+
+#     is_significant = p_value < alpha
+
+#     return t_statistic, p_value, is_significant
+
+# print(independent_ttest(daten['data_A'], daten['data_B']))
+
+def generate_tukey_subscripts(tukey_result_df):
+
+    all_groups = list(set(tukey_result_df["group1"]).union(
+        set(tukey_result_df["group2"])))
+    gmeans = {}
+    gmeans[all_groups[0]] = 0
+
+    related_comparisons = tukey_result_df[(
+        tukey_result_df["group1"] == all_groups[0])]
+    related_comparisons_2 = tukey_result_df[(
+        tukey_result_df["group2"] == all_groups[0])]
+
+    for _, comparison in related_comparisons.iterrows():
+        gmeans[comparison["group2"]] = 0 + comparison['meandiff']
+    for _, comparison in related_comparisons_2.iterrows():
+        gmeans[comparison["group1"]] = 0 - comparison['meandiff']
+
+    sorted_groups = sorted(all_groups, key=lambda group: -gmeans[group])
+
+    print(sorted_groups)
+
+    result_group = {}
+    for group in sorted_groups:
+        result_group[group] = ''
+    letters = [chr(i) for i in range(ord('a'), ord('z')+1)]
+    index = 0
+
+    for i in range(len(sorted_groups)):
+        result_group[sorted_groups[i]] += letters[index]
+        for j in range(len(sorted_groups)):
+            if i != j:
+                # p_value = tukey_result_df[(tukey_result_df["group1"] == sorted_groups[i]) & (tukey_result_df["group2"] == sorted_groups[j]) |(tukey_result_df["group2"] == sorted_groups[i]) & (tukey_result_df["group1"] == sorted_groups[j])]['p-adj'].iloc[0]
+                p_value = tukey_result_df.loc[
+                    ((tukey_result_df["group1"]==sorted_groups[i]) & (tukey_result_df["group2"]==sorted_groups[j])) | ((tukey_result_df["group2"]==sorted_groups[i]) & (tukey_result_df["group1"]==sorted_groups[j])),
+                    "p-adj"
+                ].iloc[0]
+                if p_value <= 0.05:
+                    if p_value <= 0.01:
+                        print(sorted_groups[i], sorted_groups[j])
+                        result_group[sorted_groups[j]] += letters[index].upper()
+                        print(result_group)
+                    else:
+                        print(sorted_groups[i], sorted_groups[j])
+                        result_group[sorted_groups[j]] += letters[index]
+                        print(result_group)
+        if any(value == '' for value in result_group.values()):
+            index += 1
+        else:
+            break
 
 
-def independent_ttest(data1, data2, alpha=0.05):
-    t_statistic, p_value = ttest_ind(data1, data2)
-    
-    is_significant = p_value < alpha
-    
-    return t_statistic, p_value, is_significant
+    return result_group
 
-print(independent_ttest(daten['data_A'], daten['data_B']))
+
+tukey_result_df = df = pandas.DataFrame(
+    data=result['Tukey HSD']._results_table.data[1:], columns=result['Tukey HSD']._results_table.data[0])
+
+subscripts_df = generate_tukey_subscripts(tukey_result_df)
+print(subscripts_df)
