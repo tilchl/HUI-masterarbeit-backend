@@ -1,3 +1,4 @@
+from typing import Any, Dict
 import pandas
 from scipy.stats import ttest_ind
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
@@ -245,10 +246,11 @@ def queryOneCPA(ID):
     return result[0]
 
 
-@app.get("/getMeanAndVariance/{data}")
-def getMeanAndVariance(data):
-    data = urllib.parse.unquote(data)
-    data = ast.literal_eval(data)
+@app.post("/getMeanAndVariance/")
+def getMeanAndVariance(req: Dict[Any, Any] = None):
+    data = req['data']
+    # data = urllib.parse.unquote(data)
+    # data = ast.literal_eval(data)
     data = [float(item) for item in data]
     mean = np.mean(data)
     variance = np.var(data, ddof=1)
@@ -271,12 +273,13 @@ def getMeanAndVariance(data):
     }
 
 
-@app.get("/buildColumn/")
-def buildColumn(predata, postdata, key):
-    predata = urllib.parse.unquote(predata)
-    predata = ast.literal_eval(predata)
-    postdata = urllib.parse.unquote(postdata)
-    postdata = ast.literal_eval(postdata)
+@app.post("/buildColumn/")
+def buildColumn(data: Dict[Any, Any] = None):
+    predata, postdata, key = data['predata'], data['postdata'], data['key']
+    # predata = urllib.parse.unquote(predata)
+    # predata = ast.literal_eval(predata)
+    # postdata = urllib.parse.unquote(postdata)
+    # postdata = ast.literal_eval(postdata)
 
     query_pre = f"MATCH (n:PreData)\
               WHERE n.Sample_ID IN {str(predata)}\
@@ -290,15 +293,16 @@ def buildColumn(predata, postdata, key):
     result_post = GRAPH_CRYO.run(query_post).data()[0]['data']
 
     return {
-        "pre_data": getMeanAndVariance(str(result_pre)),
-        "post_data": getMeanAndVariance(str(result_post))
+        "pre_data": getMeanAndVariance({'data': result_pre}),
+        "post_data": getMeanAndVariance({'data': result_post})
     }
 
 
-@app.get("/buildAnovaTable/")
-def buildAnovaTable(postdata, key):
-    postdata = urllib.parse.unquote(postdata)
-    postdata = ast.literal_eval(postdata)
+@app.post("/buildAnovaTable/")
+def buildAnovaTable(data: Dict[Any, Any] = None):
+    postdata, key = data['postdata'], data['key']
+    # postdata = urllib.parse.unquote(postdata)
+    # postdata = ast.literal_eval(postdata)
     for _key in list(postdata.keys()):
         query_post = f"MATCH (n:PostData)\
               WHERE n.Sample_ID IN {str(postdata[_key])}\
@@ -352,8 +356,6 @@ def generate_tukey_subscripts(tukey_result_df):
 
     sorted_groups = sorted(all_groups, key=lambda group: -gmeans[group])
 
-    print(sorted_groups)
-
     result_group = {}
     for group in sorted_groups:
         result_group[group] = ''
@@ -371,13 +373,9 @@ def generate_tukey_subscripts(tukey_result_df):
                 ].iloc[0]
                 if p_value <= 0.05:
                     if p_value <= 0.01:
-                        print(sorted_groups[i], sorted_groups[j])
                         result_group[sorted_groups[j]] += letters[index].upper()
-                        print(result_group)
                     else:
-                        print(sorted_groups[i], sorted_groups[j])
                         result_group[sorted_groups[j]] += letters[index]
-                        print(result_group)
         if any(value == '' for value in result_group.values()):
             index += 1
         else:
