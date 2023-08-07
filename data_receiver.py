@@ -46,7 +46,7 @@ def dict_to_txt(dict_form_str_data, data_type, file_name):
                     if key == 'Curve':
                         curve_content = '\n##' + value
                     else:
-                        content+=(f'{key}: {value}\n')
+                        content+=(f'#{key}: {value}\n')
                 content+= curve_content
             elif cpa_type == 'FTIR':
                 content = '#DATA\n'

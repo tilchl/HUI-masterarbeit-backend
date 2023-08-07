@@ -4,7 +4,6 @@ import os
 def load_dsc_data(data_path, dict_body):
     try:
         if os.path.exists(data_path):
-            dict_body['DSC ID'] = os.path.basename(data_path).rsplit('.',1)[0]
             curve_head = []
             with open(data_path, "r", encoding="utf-8", errors='replace') as file:
                 lines = file.readlines()
@@ -14,7 +13,7 @@ def load_dsc_data(data_path, dict_body):
                         curve_head = line.split(';')
                         break
             with open(data_path, "r", encoding="utf-8", errors='replace') as file:
-                for line in lines:        
+                for line in lines:
                     line = line.strip()
                     if line != "":
                         if ';' in line and '#' not in line:
@@ -28,6 +27,7 @@ def load_dsc_data(data_path, dict_body):
                             value = value.strip()
                             # if key in dict_body.keys():
                             dict_body[key] = value
+                dict_body['DSC ID'] = dict_body['IDENTITY']
                         
 
             with open('log/log_load.txt', 'a+') as file:
