@@ -224,8 +224,10 @@ def queryOneExperiment(ID):
               OPTIONAL MATCH (second)<-[:probe_of_versuch*..1]-(third:Probe)\
               WITH experiment, second, COLLECT(DISTINCT third) as thirdNodes\
               RETURN experiment, COLLECT({{versuch: second, probes: thirdNodes}}) as child'
-    result = GRAPH_CRYO.run(query).data()
-    return result[0]
+    result = GRAPH_CRYO.run(query).data()[0]
+    result['child'] = sorted(result['child'], key=lambda child: child['versuch']['Versuch_ID'])
+    
+    return result
 
 
 @app.get("/queryOneCPA/{ID}")
