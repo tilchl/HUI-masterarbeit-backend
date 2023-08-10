@@ -230,7 +230,7 @@ def queryOneExperiment(ID):
 
 @app.get("/queryOneCPA/{ID}")
 def queryOneCPA(ID):
-    query = f"MATCH (cpa:CPA {{CPA_ID: '{ID}'}})\
+    query = f"""MATCH (cpa:CPA {{CPA_ID: '{ID}'}})\
               OPTIONAL MATCH (cpa:CPA {{CPA_ID: '{ID}'}})-[*..1]->(c)\
               WITH cpa, c,\
                 CASE labels(c)[0]\
@@ -240,10 +240,12 @@ def queryOneCPA(ID):
                     WHEN 'Osmolality' THEN c.Osmolality_ID\
                     WHEN 'Viscosity' THEN c.Viscosity_ID\
                 END AS attribute_value\
-              RETURN cpa, COLLECT({{class: labels(c)[0], unique_id:attribute_value}}) AS child"
-
-    result = GRAPH_CPA.run(query).data()
-    return result[0]
+              RETURN cpa, COLLECT({{class: labels(c)[0], unique_id:attribute_value, properties: properties(c)}}) AS child"""
+    result = GRAPH_CPA.run(query).data()[0]
+    for child in result['child']:
+        del child['properties']['Curve']
+    
+    return result
 
 
 @app.post("/getMeanAndVariance/")
