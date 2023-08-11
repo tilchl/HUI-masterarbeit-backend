@@ -298,22 +298,38 @@ def buildColumn(data: Dict[Any, Any] = None):
 
     return {
         "pre_data": getMeanAndVariance({'data': result_pre}),
-        "post_data": getMeanAndVariance({'data': result_post})
+        "post_data": getMeanAndVariance({'data': result_post}),
+        "post/pre": getMeanAndVariance({'data': [f"{(float(item)*100)/float(np.mean([float(item) for item in result_pre])):.4f}" for item in result_post]})
     }
 
 
 @app.post("/buildAnovaTable/")
 def buildAnovaTable(data: Dict[Any, Any] = None):
-    postdata, key = data['postdata'], data['key']
+    postdata, predata, key = data['postdata'],data['predata'], data['key']
     # postdata = urllib.parse.unquote(postdata)
-    # postdata = ast.literal_eval(postdata)
+    # postdata = ast.literal_eval(postdata)\\
+    ppdata = {}
     for _key in list(postdata.keys()):
-        query_post = f"MATCH (n:PostData)\
-              WHERE n.Sample_ID IN {str(postdata[_key])}\
-              RETURN COLLECT(n.`{key}`) AS data"
-        postdata[_key] = GRAPH_CRYO.run(query_post).data()[0]['data']
+        su = []
+        for i,p in enumerate(postdata[_key]):
+            query_post = f"MATCH (n:PostData)\
+                WHERE n.Sample_ID IN {str(p)}\
+                RETURN COLLECT(n.`{key}`) AS data"
+            query_pre = f"MATCH (n:PreData)\
+                WHERE n.Sample_ID IN {str(predata[_key][i])}\
+                RETURN COLLECT(n.`{key}`) AS data"
+            postdata[_key][i] = GRAPH_CRYO.run(query_post).data()[0]['data']
+            mean = np.mean([float(item) for item in GRAPH_CRYO.run(query_pre).data()[0]['data']])
+            su.append([str((float(item)*100)/mean) for item in postdata[_key][i]])
+        ppdata[_key] = su
+    for _key in list(postdata.keys()):
+        postdata[_key] = [item for sublist in postdata[_key] for item in sublist]
+        ppdata[_key] = [item for sublist in ppdata[_key] for item in sublist]
 
-    return anovaTest(str(postdata))
+    return {
+        "post":anovaTest(str(postdata)),
+        "post/pre":anovaTest(str(ppdata))
+        }
 
 
 @app.get("/anovaTest/{daten}")
