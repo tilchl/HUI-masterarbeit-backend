@@ -81,7 +81,7 @@ class BuildDataStore:
             else:
                 with open('log/log_build.txt', 'a+') as file:
                             file.write(
-                                f"{datetime.datetime.now()} ERROR Created folder: {data_store_dir}: already exists \n")
+                                f"{datetime.datetime.now()} folder: {data_store_dir}: exists \n")
                 return 'exists'
         except Exception as e:
             with open('log/log_build.txt', 'a+') as file:

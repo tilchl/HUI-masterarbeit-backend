@@ -100,9 +100,13 @@ def deleteOneType(store_name, data_type):
     return BuildDataStore(store_name).delete_one_type(data_type)
 
 
-@app.get("/buildOneType/")
-def buildOneType(store_name, data_type):
-    return BuildDataStore(store_name).create_one_type(data_type)
+@app.get("/checkIntegrity/")
+def checkIntegrity(store_name, data_type):
+    todo = data_type.split(',')
+    response = {}
+    for file in todo:
+        response[file] = BuildDataStore(store_name).create_one_type(file)
+    return response
 
 
 @app.get("/cleanLog/{log_id}")
