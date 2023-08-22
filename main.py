@@ -1,3 +1,4 @@
+from py2neo import Node, Relationship
 from typing import Any, Dict
 import pandas
 from scipy.stats import ttest_ind
@@ -179,6 +180,8 @@ UNIQUE_ID = {
     'PreData': 'Sample_ID',
     'PostData': 'Sample_ID',
     'Experiment': 'Experiment_ID',
+    'Probe':'Unique_ID',
+    'Versuch':'Unique_ID',
     'Process': 'Process_ID',
     'CPA': 'CPA_ID',
     'DSC': 'DSC_ID',
@@ -229,8 +232,11 @@ def queryOneExperiment(ID):
               WITH experiment, second, COLLECT(DISTINCT third) as thirdNodes\
               RETURN experiment, COLLECT({{versuch: second, probes: thirdNodes}}) as child'
     result = GRAPH_CRYO.run(query).data()[0]
-    result['child'] = sorted(result['child'], key=lambda child: child['versuch']['Versuch_ID'])
-    
+    try:
+        result['child'] = sorted(
+            result['child'], key=lambda child: child['versuch']['Versuch_ID'])
+    except:
+        pass
     return result
 
 
@@ -249,8 +255,10 @@ def queryOneCPA(ID):
               RETURN cpa, COLLECT({{class: labels(c)[0], unique_id:attribute_value, properties: properties(c)}}) AS child"""
     result = GRAPH_CPA.run(query).data()[0]
     for child in result['child']:
-        del child['properties']['Curve']
-    
+        try:
+            del child['properties']['Curve']
+        except:
+            continue
     return result
 
 
@@ -309,13 +317,13 @@ def buildColumn(data: Dict[Any, Any] = None):
 
 @app.post("/buildAnovaTable/")
 def buildAnovaTable(data: Dict[Any, Any] = None):
-    postdata, predata, key = data['postdata'],data['predata'], data['key']
+    postdata, predata, key = data['postdata'], data['predata'], data['key']
     # postdata = urllib.parse.unquote(postdata)
     # postdata = ast.literal_eval(postdata)\\
     ppdata = {}
     for _key in list(postdata.keys()):
         su = []
-        for i,p in enumerate(postdata[_key]):
+        for i, p in enumerate(postdata[_key]):
             query_post = f"MATCH (n:PostData)\
                 WHERE n.Sample_ID IN {str(p)}\
                 RETURN COLLECT(n.`{key}`) AS data"
@@ -323,17 +331,20 @@ def buildAnovaTable(data: Dict[Any, Any] = None):
                 WHERE n.Sample_ID IN {str(predata[_key][i])}\
                 RETURN COLLECT(n.`{key}`) AS data"
             postdata[_key][i] = GRAPH_CRYO.run(query_post).data()[0]['data']
-            mean = np.mean([float(item) for item in GRAPH_CRYO.run(query_pre).data()[0]['data']])
-            su.append([str((float(item)*100)/mean) for item in postdata[_key][i]])
+            mean = np.mean(
+                [float(item) for item in GRAPH_CRYO.run(query_pre).data()[0]['data']])
+            su.append([str((float(item)*100)/mean)
+                      for item in postdata[_key][i]])
         ppdata[_key] = su
     for _key in list(postdata.keys()):
-        postdata[_key] = [item for sublist in postdata[_key] for item in sublist]
+        postdata[_key] = [item for sublist in postdata[_key]
+                          for item in sublist]
         ppdata[_key] = [item for sublist in ppdata[_key] for item in sublist]
 
     return {
-        "post":anovaTest(str(postdata)),
-        "post/pre":anovaTest(str(ppdata))
-        }
+        "post": anovaTest(str(postdata)),
+        "post/pre": anovaTest(str(ppdata))
+    }
 
 
 @app.get("/anovaTest/{daten}")
@@ -353,7 +364,8 @@ def anovaTest(daten):
     result["F-statistic"] = round(f_statistic, 4)
     result["p-value"] = round(p_value, 4)
     # Tukey's HSD
-    tukey_results = pairwise_tukeyhsd([float(n) for n in np.concatenate(data)], np.repeat(keys, [len(d) for d in data]), 0.05)
+    tukey_results = pairwise_tukeyhsd([float(n) for n in np.concatenate(
+        data)], np.repeat(keys, [len(d) for d in data]), 0.05)
     df = pandas.DataFrame(
         data=tukey_results._results_table.data[1:], columns=tukey_results._results_table.data[0])
     result["Tukey HSD 0.05"] = list(df.to_dict(orient='index').values())
@@ -392,12 +404,14 @@ def generate_tukey_subscripts(tukey_result_df):
             if i != j:
                 # p_value = tukey_result_df[(tukey_result_df["group1"] == sorted_groups[i]) & (tukey_result_df["group2"] == sorted_groups[j]) |(tukey_result_df["group2"] == sorted_groups[i]) & (tukey_result_df["group1"] == sorted_groups[j])]['p-adj'].iloc[0]
                 p_value = tukey_result_df.loc[
-                    ((tukey_result_df["group1"]==sorted_groups[i]) & (tukey_result_df["group2"]==sorted_groups[j])) | ((tukey_result_df["group2"]==sorted_groups[i]) & (tukey_result_df["group1"]==sorted_groups[j])),
+                    ((tukey_result_df["group1"] == sorted_groups[i]) & (tukey_result_df["group2"] == sorted_groups[j])) | (
+                        (tukey_result_df["group2"] == sorted_groups[i]) & (tukey_result_df["group1"] == sorted_groups[j])),
                     "p-adj"
                 ].iloc[0]
                 if p_value <= 0.05:
                     if p_value <= 0.01:
-                        result_group[sorted_groups[j]] += letters[index].upper()
+                        result_group[sorted_groups[j]
+                                     ] += letters[index].upper()
                     else:
                         result_group[sorted_groups[j]] += letters[index]
         if any(value == '' for value in result_group.values()):
@@ -406,6 +420,7 @@ def generate_tukey_subscripts(tukey_result_df):
             break
 
     return result_group
+
 
 @app.get("/tTest/")
 def tTest(data1, data2, alpha=0.05):
@@ -418,3 +433,293 @@ def tTest(data1, data2, alpha=0.05):
         "p_value": p_value,
         "is_significant": is_significant
     }
+
+
+@app.post("/addDelModi/")
+def addDelModi(todoSQL: Dict[Any, Any] = None):
+    addition, deletion, changeAttr, changeName = todoSQL['addition'], todoSQL['deletion'], todoSQL['changeAttr'], todoSQL['changeName']
+    result = {
+        'addition': [],
+        'deletion': {'nodeAttributes':[], 'childrenNodes': [], 'fatherNodes':[]},
+        'changeName': {},
+        'changeAttr':{}
+    }
+    for todo in addition:
+        if todo['class'] == 'Versuch':
+            graph = GRAPH_CRYO
+            versuch_node = Node('Versuch', Versuch_ID=todo["info"]["Versuche ID"],
+                                Unique_ID=f'{todo["father"]["Unique_ID"]}*-*{todo["info"]["Versuche ID"]}')
+
+            experiment_node = graph.nodes.match(
+                'Experiment', Experiment_ID=todo['father']['Unique_ID']).first()
+            graph.create(Relationship(
+                versuch_node, 'versuch_of_experiment', experiment_node))
+            for probe in list((todo['info']).keys())[1:]:
+                probe_node = Node('Probe', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in todo['info'][probe].items(
+                )}, Unique_ID=f"{todo['father']['Unique_ID']}*-*{todo['info']['Versuche ID']}*-*{todo['info'][probe]['Sample ID']}")
+
+                versuch_node = graph.nodes.match(
+                    'Versuch', Unique_ID=f'{todo["father"]["Unique_ID"]}*-*{todo["info"]["Versuche ID"]}').first()
+                graph.create(Relationship(
+                    probe_node, 'probe_of_versuch', versuch_node))
+                for pre_id in todo['info'][probe]['PreData ID']:
+                    predata_node = graph.nodes.match(
+                        'PreData', Sample_ID=pre_id).first()
+                    graph.create(Relationship(
+                        predata_node, 'pre_data_of_probe', probe_node))
+                for post_id in todo['info'][probe]['PostData ID']:
+                    postdata_node = graph.nodes.match(
+                        'PostData', Sample_ID=post_id).first()
+                    graph.create(Relationship(
+                        postdata_node, 'post_data_of_probe', probe_node))
+            result['addition'].append('success')
+        elif todo['class'] == 'Probe':
+            graph = GRAPH_CRYO
+            versuch_node = graph.nodes.match(
+                'Versuch', Unique_ID=todo["father"]["Unique_ID"]).first()
+            probe_node = Node('Probe', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in todo['info'].items(
+            )}, Unique_ID=f"{todo['father']['Unique_ID']}*-*{todo['info']['Sample ID']}")
+            graph.create(Relationship(
+                probe_node, 'probe_of_versuch', versuch_node))
+            for pre_id in todo['info']['PreData ID']:
+                predata_node = graph.nodes.match(
+                    'PreData', Sample_ID=pre_id).first()
+                graph.create(Relationship(
+                    predata_node, 'pre_data_of_probe', probe_node))
+            for post_id in todo['info']['PostData ID']:
+                postdata_node = graph.nodes.match(
+                    'PostData', Sample_ID=post_id).first()
+                graph.create(Relationship(
+                    postdata_node, 'post_data_of_probe', probe_node))
+            result['addition'].append('success')
+        elif todo['class'] in ['PreData', 'PostData', 'Process']:
+            graph = GRAPH_CRYO
+            unique_name = 'Sample_ID' if todo['class'] != 'Process' else 'Process_ID'
+            graph.run(f"""
+                    MATCH (n: {todo['class']})
+                    WHERE n.{unique_name} = "{todo['unique_id']}"
+                    SET n.{todo['attrKey']} = "{todo['attrValue']}"
+                """)
+            result['addition'].append('success')
+        else:
+            graph = GRAPH_CPA
+            if 'father' in list(todo.keys()):
+                cpa_node = graph.nodes.match('CPA', CPA_ID=todo['father']['Unique_ID']).first()
+                new_node = Node(todo['class'], **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in todo['info'].items()})
+                graph.create(Relationship(cpa_node, f"{todo['class']}_of_CPA", new_node))
+                result['addition'].append('success')
+            else:
+                graph.run(f"""
+                    MATCH (n: {todo['class']})
+                    WHERE n.{todo['class']}_ID = "{todo['unique_id']}"
+                    SET n.{todo['attrKey']} = "{todo['attrValue']}"
+                """)
+                result['addition'].append('success')
+
+    for todo in deletion['nodeAttributes']:
+        graph = GRAPH_CRYO if todo['nodeClass'] in ['PreData', 'PostData', 'Versuch', 'Experiment', 'Probe'] else GRAPH_CPA
+        graph.run(f"""
+                    MATCH (n: {todo['nodeClass']})
+                    WHERE n.{UNIQUE_ID[todo['nodeClass']] if todo['nodeClass'] in list(UNIQUE_ID.keys()) else (todo['nodeClass']+'_ID')} = "{todo['Unique_ID']}"
+                    REMOVE n.{todo['attributeKey']}
+                """)
+        result['deletion']['nodeAttributes'].append('success')
+    for todo in deletion['childrenNodes']:
+        if todo['nodeClass'] in ['PreData', 'PostData']:
+            GRAPH_CRYO.run(f"""
+                        MATCH (n: {todo['nodeClass']})
+                        WHERE n.Sample_ID = "{todo['Unique_ID']}"
+                        OPTIONAL MATCH (n)--(p:Probe)
+                        DETACH DELETE n
+                        SET p.{todo['nodeClass']}_ID = [id IN p.{todo['nodeClass']}_ID WHERE id <> "{todo['Unique_ID']}"]
+                    """)
+            result['deletion']['nodeAttributes'].append('success')
+        elif todo['nodeClass'] == 'Process':
+            GRAPH_CPA.run(f"""
+                        MATCH (n: Process)
+                        WHERE n.Process_ID = "{todo['Unique_ID']}"
+                        DETACH DELETE n
+                    """)
+            result['deletion']['nodeAttributes'].append('success')
+        else:
+            GRAPH_CPA.run(f"""
+                        MATCH (n: {todo['nodeClass']})
+                        WHERE n.{todo['nodeClass']}_ID = "{todo['Unique_ID']}"
+                        DETACH DELETE n
+                    """)
+            result['deletion']['nodeAttributes'].append('success')
+
+    for todo in deletion['fatherNodes']:
+        if todo['nodeClass'] == 'Versuch':
+            GRAPH_CRYO.run(f"""
+                        MATCH (n: Versuch)
+                        WHERE n.Unique_ID = "{todo['Unique_ID']}"
+                        OPTIONAL MATCH (n)--(p:Probe)
+                        DETACH DELETE n, p
+                    """)
+            result['deletion']['nodeAttributes'].append('success')
+        elif todo['nodeClass'] == 'Experiment':
+            GRAPH_CRYO.run(f"""
+                        MATCH (e: Experiment)
+                        WHERE e.Experiment_ID = "{todo['Unique_ID']}"
+                        OPTIONAL MATCH (e)--(v:Versuch)
+                        OPTIONAL MATCH (v)--(p:Probe)
+                        DETACH DELETE e, v, p
+                    """)
+            result['deletion']['nodeAttributes'].append('success')
+        elif todo['nodeClass'] == 'Probe':
+            GRAPH_CRYO.run(f"""
+                        MATCH (n: Probe)
+                        WHERE n.Unique_ID = "{todo['Unique_ID']}"
+                        DETACH DELETE n
+                    """)
+            result['deletion']['nodeAttributes'].append('success')
+        elif todo['nodeClass'] == 'CPA':
+            GRAPH_CPA.run(f"""
+                        MATCH (c: CPA)
+                        WHERE c.CPA_ID = "{todo['Unique_ID']}"
+                        OPTIONAL MATCH (c)--(i)
+                        DETACH DELETE c, i
+                    """)
+            result['deletion']['nodeAttributes'].append('success')
+    
+    changeAttr = sorted(changeAttr, key=custom_sort_key)
+    for todo in changeAttr:
+        graph = GRAPH_CRYO if todo['class'] in ['PreData', 'PostData', 'Versuch', 'Experiment', 'Probe'] else GRAPH_CPA
+        if todo['attrKey'] in ['PostData_ID', 'PreData_ID']:
+            graph.run(f"""
+                    MATCH (p: Probe)
+                    WHERE p.Unique_ID = "{todo['unique_id']}"
+                    SET p.{todo['attrKey']} = {todo['currentValue']}
+                """)
+            relation_type = 'pre_data_of_probe' if todo['attrKey']=='PreData_ID' else 'post_data_of_probe'
+            graph.run(f"""
+                    MATCH (p: Probe)-[r:{relation_type}]-()
+                    WHERE p.Unique_ID = "{todo['unique_id']}"
+                    DELETE r
+                """)
+            probe_node = graph.nodes.match('Probe', Unique_ID=todo['unique_id']).first()
+            pp_type = 'PreData' if todo['attrKey']=='PreData_ID' else 'PostData'
+            for data_id in todo['currentValue']:
+                pp_node = graph.nodes.match(pp_type, Sample_ID=data_id).first()
+                graph.create(Relationship(pp_node, relation_type, probe_node))
+        else:
+            graph.run(f"""
+                    MATCH (p: {todo['class']})
+                    WHERE p.{UNIQUE_ID[todo['class']]} = "{todo['unique_id']}"
+                    SET p.{todo['attrKey']} = "{todo['currentValue']}"
+                """)
+        result['changeAttr'][todo['unique_id']] = 'success'
+
+    changeName = sorted(changeName, key=custom_sort_key)
+    for todo in changeName:
+        if todo['class'] in ['PreData', 'PostData']:
+            GRAPH_CRYO.run(f"""
+                    MATCH (n:{todo['class']})
+                    WHERE n.Sample_ID = "{todo['unique_id']}"
+                    OPTIONAL MATCH (n)--(p:Probe)
+                    SET n.Sample_ID = "{todo['currentName']}"
+                    SET p.{todo['class']}_ID = [item IN p.{todo['class']}_ID | CASE WHEN item = "{todo['unique_id']}" THEN "{todo['currentName']}" ELSE item END]
+                    """)
+            result['changeName'][todo['unique_id']] = 'success'
+        
+        elif todo['class'] == 'Process':
+            GRAPH_CPA.run(f"""
+                    MATCH (n:{todo['class']})
+                    WHERE n.Process_ID = "{todo['unique_id']}"
+                    SET n.Process_ID = "{todo['currentName']}"
+                    """)
+            GRAPH_CRYO.run(f"""
+                    MATCH (p:Probe)
+                    WHERE p.Process_ID = "{todo['unique_id']}"
+                    SET p.Process_ID = "{todo['currentName']}"
+                    """)
+            result['changeName'][todo['unique_id']] = 'success'
+
+        elif todo['class'] == 'Probe':
+            GRAPH_CRYO.run(f"""
+                    MATCH (p:Probe)
+                    WHERE p.Unique_ID = "{todo['unique_id']}"
+                    SET p.Sample_ID = "{todo['currentName']}"
+                    SET p.Unique_ID = "{todo['unique_id'].rsplit('*-*', 1)[0] + '*-*' + todo['currentName']}"
+                    """)
+            result['changeName'][todo['unique_id']] = 'success'
+
+        elif todo['class'] == 'Versuch':
+            GRAPH_CRYO.run(f"""
+                    MATCH (v:Versuch)
+                    WHERE v.Unique_ID = "{todo['unique_id']}"
+                    SET v.Versuch_ID = "{todo['currentName']}"
+                    SET v.Unique_ID = "{todo['unique_id'].rsplit('*-*', 1)[0] + '*-*' + todo['currentName']}"
+                    """)
+            GRAPH_CRYO.run(f"""
+                    MATCH (v:Versuch)--(p:Probe)
+                    WHERE v.Unique_ID = "{todo['unique_id'].rsplit('*-*', 1)[0] + '*-*' + todo['currentName']}"
+                    WITH p, SPLIT(p.Unique_ID, '*-*') AS parts
+                    WITH p, parts[0] + "*-*{todo['currentName']}*-*" + parts[2] AS new_uniqueId
+                    SET p.Unique_ID = new_uniqueId
+                    """)
+            result['changeName'][todo['unique_id']] = 'success'
+
+        elif todo['class'] == 'Experiment':
+            GRAPH_CRYO.run(f"""
+                    MATCH (e:Experiment)
+                    WHERE e.Experiment_ID = "{todo['unique_id']}"
+                    SET e.Experiment_ID = "{todo['currentName']}"
+                    """)
+            GRAPH_CRYO.run(f"""
+                    MATCH (e:Experiment)--(v:Versuch)
+                    WHERE e.Experiment_ID = "{todo['currentName']}"
+                    WITH v, SPLIT(v.Unique_ID, '*-*') AS parts
+                    WITH v, "{todo['currentName']}*-*" + parts[1] AS new_uniqueIdVersuch
+                    SET v.Unique_ID = new_uniqueIdVersuch
+                    """)
+            GRAPH_CRYO.run(f"""
+                    MATCH (e:Experiment)--()--(p:Probe)
+                    WHERE e.Experiment_ID = "{todo['currentName']}"
+                    WITH p, SPLIT(p.Unique_ID, '*-*') AS partsP
+                    WITH p, "{todo['currentName']}*-*" + partsP[1] + "*-*" + partsP[2] AS new_uniqueId
+                    SET p.Unique_ID = new_uniqueId
+                    """)
+            result['changeName'][todo['unique_id']] = 'success'
+        elif todo['class'] == 'CPA':
+            GRAPH_CPA.run(f"""
+                    MATCH (n:CPA)
+                    WHERE n.CPA_ID = "{todo['unique_id']}"
+                    SET n.CPA_ID = "{todo['currentName']}"
+                    """)
+            GRAPH_CRYO.run(f"""
+                    MATCH (p:Probe)
+                    WHERE p.CPA_ID = "{todo['unique_id']}"
+                    SET p.CPA_ID = "{todo['currentName']}"
+                    """)
+            result['changeName'][todo['unique_id']] = 'success'
+        else:
+            GRAPH_CPA.run(f"""
+                    MATCH (n:{todo['class']})
+                    WHERE n.{todo['class']}_ID = "{todo['unique_id']}"
+                    SET n.{todo['class']}_ID = "{todo['currentName']}"
+                    """)
+            result['changeName'][todo['unique_id']] = 'success'
+
+    return result
+
+
+def custom_sort_key(input_item):
+    item = input_item['class']
+    if item == 'PreData':
+        return (0, item)
+    elif item == 'PostData':
+        return (1, item)
+    elif item == 'Process':
+        return (2, item)
+    elif item == 'Probe':
+        return (4, item)
+    elif item == 'Versuch':
+        return (5, item)
+    elif item == 'Experiment':
+        return (6, item)
+    elif item == 'CPA':
+        return (7, item)
+    else:
+        return (3, item)
