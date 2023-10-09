@@ -497,8 +497,8 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
             unique_name = 'Sample_ID' if todo['class'] != 'Process' else 'Process_ID'
             graph.run(f"""
                     MATCH (n: {todo['class']})
-                    WHERE n.{unique_name} = "{todo['unique_id']}"
-                    SET n.{todo['attrKey']} = "{todo['attrValue']}"
+                    WHERE n.`{unique_name}` = "{todo['unique_id']}"
+                    SET n.`{todo['attrKey']}` = "{todo['attrValue']}"
                 """)
             result['addition'].append('success')
         else:
@@ -511,8 +511,8 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
             else:
                 graph.run(f"""
                     MATCH (n: {todo['class']})
-                    WHERE n.{todo['class']}_ID = "{todo['unique_id']}"
-                    SET n.{todo['attrKey']} = "{todo['attrValue']}"
+                    WHERE n.`{todo['class']}_ID` = "{todo['unique_id']}"
+                    SET n.`{todo['attrKey']}` = "{todo['attrValue']}"
                 """)
                 result['addition'].append('success')
 
@@ -520,8 +520,8 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
         graph = GRAPH_CRYO if todo['nodeClass'] in ['PreData', 'PostData', 'Versuch', 'Experiment', 'Probe'] else GRAPH_CPA
         graph.run(f"""
                     MATCH (n: {todo['nodeClass']})
-                    WHERE n.{UNIQUE_ID[todo['nodeClass']] if todo['nodeClass'] in list(UNIQUE_ID.keys()) else (todo['nodeClass']+'_ID')} = "{todo['Unique_ID']}"
-                    REMOVE n.{todo['attributeKey']}
+                    WHERE n.`{UNIQUE_ID[todo['nodeClass']] if todo['nodeClass'] in list(UNIQUE_ID.keys()) else (todo['nodeClass']+'_ID')}` = "{todo['Unique_ID']}"
+                    REMOVE n.`{todo['attributeKey']}`
                 """)
         result['deletion']['nodeAttributes'].append('success')
     for todo in deletion['childrenNodes']:
@@ -531,7 +531,7 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
                         WHERE n.Sample_ID = "{todo['Unique_ID']}"
                         OPTIONAL MATCH (n)--(p:Probe)
                         DETACH DELETE n
-                        SET p.{todo['nodeClass']}_ID = [id IN p.{todo['nodeClass']}_ID WHERE id <> "{todo['Unique_ID']}"]
+                        SET p.`{todo['nodeClass']}_ID` = [id IN p.{todo['nodeClass']}_ID WHERE id <> "{todo['Unique_ID']}"]
                     """)
             result['deletion']['nodeAttributes'].append('success')
         elif todo['nodeClass'] == 'Process':
@@ -544,7 +544,7 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
         else:
             GRAPH_CPA.run(f"""
                         MATCH (n: {todo['nodeClass']})
-                        WHERE n.{todo['nodeClass']}_ID = "{todo['Unique_ID']}"
+                        WHERE n.`{todo['nodeClass']}_ID` = "{todo['Unique_ID']}"
                         DETACH DELETE n
                     """)
             result['deletion']['nodeAttributes'].append('success')
@@ -590,7 +590,7 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
             graph.run(f"""
                     MATCH (p: Probe)
                     WHERE p.Unique_ID = "{todo['unique_id']}"
-                    SET p.{todo['attrKey']} = {todo['currentValue']}
+                    SET p.`{todo['attrKey']}` = {todo['currentValue']}
                 """)
             relation_type = 'pre_data_of_probe' if todo['attrKey']=='PreData_ID' else 'post_data_of_probe'
             graph.run(f"""
@@ -606,8 +606,8 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
         else:
             graph.run(f"""
                     MATCH (p: {todo['class']})
-                    WHERE p.{UNIQUE_ID[todo['class']]} = "{todo['unique_id']}"
-                    SET p.{todo['attrKey']} = "{todo['currentValue']}"
+                    WHERE p.`{UNIQUE_ID[todo['class']]}` = "{todo['unique_id']}"
+                    SET p.`{todo['attrKey']}` = "{todo['currentValue']}"
                 """)
         result['changeAttr'][todo['unique_id']] = 'success'
 
@@ -619,7 +619,7 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
                     WHERE n.Sample_ID = "{todo['unique_id']}"
                     OPTIONAL MATCH (n)--(p:Probe)
                     SET n.Sample_ID = "{todo['currentName']}"
-                    SET p.{todo['class']}_ID = [item IN p.{todo['class']}_ID | CASE WHEN item = "{todo['unique_id']}" THEN "{todo['currentName']}" ELSE item END]
+                    SET p.`{todo['class']}_ID` = [item IN p.{todo['class']}_ID | CASE WHEN item = "{todo['unique_id']}" THEN "{todo['currentName']}" ELSE item END]
                     """)
             result['changeName'][todo['unique_id']] = 'success'
         
@@ -697,8 +697,8 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
         else:
             GRAPH_CPA.run(f"""
                     MATCH (n:{todo['class']})
-                    WHERE n.{todo['class']}_ID = "{todo['unique_id']}"
-                    SET n.{todo['class']}_ID = "{todo['currentName']}"
+                    WHERE n.`{todo['class']}_ID` = "{todo['unique_id']}"
+                    SET n.`{todo['class']}_ID` = "{todo['currentName']}"
                     """)
             result['changeName'][todo['unique_id']] = 'success'
 
