@@ -254,11 +254,11 @@ def queryOneCPA(ID):
                 END AS attribute_value\
               RETURN cpa, COLLECT({{class: labels(c)[0], unique_id:attribute_value, properties: properties(c)}}) AS child"""
     result = GRAPH_CPA.run(query).data()[0]
-    for child in result['child']:
-        try:
-            del child['properties']['Curve']
-        except:
-            continue
+    # for child in result['child']:
+    #     try:
+    #         del child['properties']['Curve']
+    #     except:
+    #         continue
     return result
 
 
@@ -510,7 +510,7 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
             result['addition'].append('success' if create_rela_pv and create_rela_ppp else 'error')
 
         elif todo['class'] in ['PreData', 'PostData', 'Process']:
-            graph = GRAPH_CRYO
+            graph = GRAPH_CRYO if todo['class'] != 'Process' else GRAPH_CPA
             unique_name = 'Sample_ID' if todo['class'] != 'Process' else 'Process_ID'
             ppp_result = graph.run(f"""
                     MATCH (n: {todo['class']})
@@ -630,14 +630,14 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
             except:
                 change_rela_pp_result = False
 
-            result['changeAttr'][todo['unique_id']] = 'success' if check_status_setAndDelete(change_attr_pp_probe) and check_status_setAndDelete(delete_rela_pp_probe) and change_rela_pp_result else 'error'
+            result['changeAttr'][todo['unique_id']+todo['attrKey']] = 'success' if check_status_setAndDelete(change_attr_pp_probe) and check_status_setAndDelete(delete_rela_pp_probe) and change_rela_pp_result else 'error'
         else:
             change_attr_result = graph.run(f"""
                     MATCH (p: {todo['class']})
                     WHERE p.`{UNIQUE_ID[todo['class']]}` = "{todo['unique_id']}"
                     SET p.`{todo['attrKey']}` = "{todo['currentValue']}"
                 """)
-            result['changeAttr'][todo['unique_id']] = 'success' if check_status_setAndDelete(change_attr_result) else 'error'
+            result['changeAttr'][todo['unique_id']+todo['attrKey']] = 'success' if check_status_setAndDelete(change_attr_result) else 'error'
 
     changeName = sorted(changeName, key=custom_sort_key)
     for todo in changeName:
