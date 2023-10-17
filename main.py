@@ -172,7 +172,7 @@ async def fileCreate(files: list[UploadFile], data_type, data_store):
 
 @app.get("/feedInNeo/")
 def feedInNeo(data_type, file_name, data_store):
-    try:
+    # try:
         if data_type == 'CPA':
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
         elif data_type == 'ExperimentCreate':
@@ -181,8 +181,8 @@ def feedInNeo(data_type, file_name, data_store):
             return FeedIntoNeo4j(data_type, f'{data_store}/Experiment/{file_name}').feed_to_neo4j()
         else:
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
-    except Exception as e:
-        return 'error'
+    # except Exception as e:
+    #     return 'error'
 
 
 UNIQUE_ID = {

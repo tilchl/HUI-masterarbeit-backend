@@ -12,7 +12,7 @@ GRAPH_CPA = connect_to_db('cpa')
 class FeedIntoNeo4j:
     def __init__(self, data_type, data_path):
         self.data_type = data_type
-        self.data_path = data_path
+        self.data_path = data_path.replace('Predata', 'PreData').replace('Postdata', 'PostData').replace('Prozess', 'Process')
 
     def load_one(self):
         if self.data_type == 'CPA':
@@ -32,22 +32,21 @@ class FeedIntoNeo4j:
         elif self.data_type == 'ExperimentCreate':
             loaded_data = load_exp_data(self.data_path)
         elif self.data_type == 'ExperimentUpload':
-            if self.data_path.resplit('.', 1)[-1] == 'json':
+            if self.data_path.rsplit('.', 1)[-1] == 'json':
                 loaded_data = load_exp_data(self.data_path)
-            if self.data_path.split('/')[4] == 'PreData' or self.data_path.split('/')[4] == 'Predata':
-                config_data = load_config_data('PreData')
-                loaded_data = load_pre_data(self.data_path, config_data)
-            if self.data_path.split('/')[5] == 'PostData' or self.data_path.split('/')[5] == 'Postdata':
-                config_data = load_config_data('PostData')
-                loaded_data = load_pre_data(self.data_path, config_data)
-            if self.data_path.split('/')[5] == 'Process' or self.data_path.split('/')[5] == 'Prozess':
-                config_data = load_config_data('Process')
-                loaded_data = load_pre_data(self.data_path, config_data)
-            if self.data_path.split('/')[5] == 'CPA':
-                config_data = load_config_data('CPA')
-                loaded_data = load_pre_data(self.data_path, config_data)
-
-
+            else:
+                if self.data_path.split('/')[4] == 'PreData' or self.data_path.split('/')[5] == 'PreData':
+                    config_data = load_config_data('PreData')
+                    loaded_data = load_pre_data(self.data_path, config_data)
+                if self.data_path.split('/')[5] == 'PostData':
+                    config_data = load_config_data('PostData')
+                    loaded_data = load_pre_data(self.data_path, config_data)
+                if self.data_path.split('/')[5] == 'Process':
+                    config_data = load_config_data('Process')
+                    loaded_data = load_pre_data(self.data_path, config_data)
+                if self.data_path.split('/')[5] == 'CPA':
+                    config_data = load_config_data('CPA')
+                    loaded_data = load_pre_data(self.data_path, config_data)
         return loaded_data
 
     def feed_to_neo4j(self):
@@ -65,15 +64,16 @@ class FeedIntoNeo4j:
             experiment_id = os.path.basename(self.data_path).rsplit(".",1)[0]
             return dict_to_neo_expriment(GRAPH_CRYO, loaded_data, experiment_id)
         elif self.data_type == 'ExperimentUpload':
-            if self.data_path.resplit('.', 1)[-1] == 'json':
+            if self.data_path.rsplit('.', 1)[-1] == 'json':
                 experiment_id = os.path.basename(self.data_path).rsplit(".",1)[0]
                 return dict_to_neo_expriment(GRAPH_CRYO, loaded_data, experiment_id)
-            if self.data_path.split('/')[4] == 'PreData' or self.data_path.split('/')[4] == 'Predata':
-                return dict_to_neo_predata(GRAPH_CRYO, loaded_data)
-            if self.data_path.split('/')[5] == 'PostData' or self.data_path.split('/')[5] == 'Postdata':
-                return dict_to_neo_postdata(GRAPH_CRYO, loaded_data)
-            if self.data_path.split('/')[5] == 'Process' or self.data_path.split('/')[5] == 'Prozess':
-                return dict_to_neo_process(GRAPH_CPA, loaded_data)
-            if self.data_path.split('/')[5] == 'CPA':
-                child = self.data_path.split('/')[7]
-                return dict_to_neo_cpa(GRAPH_CPA, loaded_data, child)
+            else:
+                if self.data_path.split('/')[4] == 'PreData' or self.data_path.split('/')[5] == 'PreData':
+                    return dict_to_neo_predata(GRAPH_CRYO, loaded_data)
+                if self.data_path.split('/')[5] == 'PostData':
+                    return dict_to_neo_postdata(GRAPH_CRYO, loaded_data)
+                if self.data_path.split('/')[5] == 'Process':
+                    return dict_to_neo_process(GRAPH_CPA, loaded_data)
+                if self.data_path.split('/')[5] == 'CPA':
+                    child = self.data_path.split('/')[7]
+                    return dict_to_neo_cpa(GRAPH_CPA, loaded_data, child)
