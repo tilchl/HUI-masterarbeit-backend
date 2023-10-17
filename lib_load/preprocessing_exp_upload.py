@@ -34,16 +34,16 @@ def preprocessing_exp_upload(files, data_store):
             for versuch_value in classified_data_by_third_element[versuch_index]:
                 if versuch_value == 'PreData':
                     for ii, cc in enumerate(classified_data_by_third_element[versuch_index][versuch_value]):
-                        classified_data_by_third_element[versuch_index][versuch_value][ii] = cc[3]
+                        classified_data_by_third_element[versuch_index][versuch_value][ii] = cc[3].rsplit('.', 1)[0]
                 else:
                     data_by_tf_element = {}
 
                     for ii, cc in enumerate(classified_data_by_third_element[versuch_index][versuch_value]):
                         if cc[3] in data_by_tf_element:
-                            data_by_tf_element[cc[3]].append(cc[4])
+                            data_by_tf_element[cc[3]].append(cc[4].rsplit('.', 1)[0])
                             data_by_tf_element[cc[3]] = list(set(data_by_tf_element[cc[3]]))
                         else:
-                            data_by_tf_element[cc[3]] = [cc[4]]
+                            data_by_tf_element[cc[3]] = [cc[4].rsplit('.', 1)[0]]
                     classified_data_by_third_element[versuch_index][versuch_value] = data_by_tf_element
         
         for versuch_index in classified_data_by_third_element:

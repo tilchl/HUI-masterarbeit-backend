@@ -40,13 +40,15 @@ class FeedIntoNeo4j:
                     loaded_data = load_pre_data(self.data_path, config_data)
                 if self.data_path.split('/')[5] == 'PostData':
                     config_data = load_config_data('PostData')
-                    loaded_data = load_pre_data(self.data_path, config_data)
+                    loaded_data = load_post_data(self.data_path, config_data)
                 if self.data_path.split('/')[5] == 'Process':
                     config_data = load_config_data('Process')
-                    loaded_data = load_pre_data(self.data_path, config_data)
+                    loaded_data = load_process_data(self.data_path, config_data)
                 if self.data_path.split('/')[5] == 'CPA':
                     config_data = load_config_data('CPA')
-                    loaded_data = load_pre_data(self.data_path, config_data)
+                    cpa_id = self.data_path.split('/')[6]
+                    child = self.data_path.split('/')[7]
+                    loaded_data = load_cpa_data(self.data_path, config_data, cpa_id, child)
         return loaded_data
 
     def feed_to_neo4j(self):
