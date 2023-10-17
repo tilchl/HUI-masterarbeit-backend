@@ -13,6 +13,10 @@ def data_receiver(save_path, contents, data_type):
             else:
                 if not os.path.exists(save_path.rsplit('/', 1)[0]):
                     os.makedirs(save_path.rsplit('/', 1)[0])
+        if data_type == 'ExperimentUpload':
+            
+            if not os.path.exists(save_path.rsplit('/', 1)[0]):
+                    os.makedirs(save_path.rsplit('/', 1)[0])
         
         with open(save_path, "wb") as f:
             f.write(contents)

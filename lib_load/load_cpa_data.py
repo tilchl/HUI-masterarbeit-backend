@@ -17,11 +17,9 @@ functions = {
 }
 
 
-def load_cpa_data(data_path, dict_body):
+def load_cpa_data(data_path, dict_body, cpa_id, child):
     try:
-        cpa_id = data_path.split('/')[2]
         dict_body["Center Node"]["CPA ID"] = cpa_id
-        child = data_path.split('/')[3]
         dict_body[child] = functions[child](data_path, dict_body[child])
 
         with open('log/log_load.txt', 'a+') as file:

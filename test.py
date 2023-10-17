@@ -3,10 +3,10 @@ import random
 from data_to_db import FeedIntoNeo4j
 from main import *
 
-# cleanLog('log_build')
-# cleanLog('log_load')
-# cleanLog('log_save')
-# cleanLog('log_upload')
+cleanLog('log_build')
+cleanLog('log_load')
+cleanLog('log_save')
+cleanLog('log_upload')
 
 # deleteDataStore('data_store')
 # buildDataStore('data_store')

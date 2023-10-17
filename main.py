@@ -16,6 +16,7 @@ from lib_save import connect_to_db
 from lib_build import BuildDatabase, BuildDataStore
 from data_to_db import FeedIntoNeo4j
 from data_receiver import data_receiver, dict_to_txt
+from lib_load import preprocessing_exp_upload
 
 app = FastAPI()
 
@@ -136,6 +137,13 @@ async def fileUpload(files: list[UploadFile], data_type, data_store):
             res.append({'file_name': file_name, 'result': upload_result,
                        'neo4j': 'waiting' if upload_result == 'success' else 'undo'})
         return str(res)
+    elif data_type == 'ExperimentUpload':
+        for file in files:
+            upload_result = data_receiver(f'{data_store}/Experiment/{file.filename}', await file.read(), data_type)
+            res.append({'file_name': file.filename, 'result': upload_result,
+                       'neo4j': 'waiting' if upload_result == 'success' else 'undo'})
+        res.append(preprocessing_exp_upload(files, data_store))
+        return str(res)
     else:
         for file in files:
             upload_result = data_receiver(f'{data_store}/{data_type}/{file.filename}', await file.read(), data_type)
@@ -167,11 +175,12 @@ def feedInNeo(data_type, file_name, data_store):
     try:
         if data_type == 'CPA':
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
-        elif data_type == 'Experiment':
-            return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
+        elif data_type == 'ExperimentCreate':
+            return FeedIntoNeo4j(data_type, f'{data_store}/Experiment/{file_name}').feed_to_neo4j()
+        elif data_type == 'ExperimentUpload':
+            return FeedIntoNeo4j(data_type, f'{data_store}/Experiment/{file_name}').feed_to_neo4j()
         else:
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
-
     except Exception as e:
         return 'error'
 
