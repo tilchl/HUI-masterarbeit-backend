@@ -172,7 +172,7 @@ async def fileCreate(files: list[UploadFile], data_type, data_store):
 
 @app.get("/feedInNeo/")
 def feedInNeo(data_type, file_name, data_store):
-    # try:
+    try:
         if data_type == 'CPA':
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
         elif data_type == 'ExperimentCreate':
@@ -181,8 +181,8 @@ def feedInNeo(data_type, file_name, data_store):
             return FeedIntoNeo4j(data_type, f'{data_store}/Experiment/{file_name}').feed_to_neo4j()
         else:
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
-    # except Exception as e:
-    #     return 'error'
+    except Exception as e:
+        return 'error'
 
 
 UNIQUE_ID = {
@@ -270,6 +270,37 @@ def queryOneCPA(ID):
     #         continue
     return result
 
+
+@app.post("/queryTheFourElements")
+def queryTheFourElements(data: Dict[Any, Any] = None):
+    predata, postdata = data['predata'], data['postdata']
+    keys = ['Viability_(%)', 'Viable_cells', 'Average_circularity', 'Average_diameter_(microns)']
+    results_output = {}
+    for index, pre_id in enumerate(predata):
+        results_output[pre_id] = {}
+    for index, post_id in enumerate(postdata):
+        results_output[post_id] = {}
+    for key in keys:
+        query_pre = f"MATCH (n:PreData)\
+                WHERE n.Sample_ID IN {str(predata)}\
+                RETURN COLLECT(n.`{key}`) AS data"
+
+        query_post = f"MATCH (n:PostData)\
+                WHERE n.Sample_ID IN {str(postdata)}\
+                RETURN COLLECT(n.`{key}`) AS data"
+
+        result_pre = GRAPH_CRYO.run(query_pre).data()[0]['data']
+        result_post = GRAPH_CRYO.run(query_post).data()[0]['data']
+
+        results_output[f'average_{key}_pre'] = getMeanAndVariance({'data': result_pre})['mean']
+
+        for index, pre_id in enumerate(predata):
+            results_output[pre_id][key] = result_pre[index]
+        for index, post_id in enumerate(postdata):
+            results_output[post_id][key] = result_post[index]
+            results_output[post_id][f'{key}_relative'] = f"{(float(result_post[index]) / float(results_output[f'average_{key}_pre'])):.4f}"
+
+    return results_output
 
 @app.post("/getMeanAndVariance/")
 def getMeanAndVariance(req: Dict[Any, Any] = None):

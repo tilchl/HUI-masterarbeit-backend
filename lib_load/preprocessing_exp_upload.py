@@ -71,9 +71,12 @@ def preprocessing_exp_upload(files, data_store):
         
         for versuch_id, versuch_data in contents.items():
             for probe_id, probe_data in versuch_data.items():
-                for task in ['CPA', 'PreData', 'PostData', 'Process']:
+                for task in ['CPA', 'Process']:
                     if task in probe_data:
                         probe_data[f"{task} ID"] = probe_data.pop(task)
+                for task in ['PreData', 'PostData']:
+                    if task in probe_data:
+                        probe_data[f"{task} ID"] = sorted(probe_data.pop(task))
 
         with open(f'{data_store}/Experiment/{filename}', 'wb') as f:
             f.write(json.dumps(contents).encode('utf-8'))
