@@ -274,7 +274,7 @@ def queryOneCPA(ID):
 @app.post("/queryTheFourElements")
 def queryTheFourElements(data: Dict[Any, Any] = None):
     predata, postdata = data['predata'], data['postdata']
-    keys = ['Viability_(%)', 'Viable_cells', 'Average_circularity', 'Average_diameter_(microns)']
+    keys = ['Viability_(%)', 'Total_viable_cells_/_ml_(x_10^6)', 'Average_circularity', 'Average_diameter_(microns)']
     results_output = {}
     for index, pre_id in enumerate(predata):
         results_output[pre_id] = {}
@@ -331,28 +331,16 @@ def getMeanAndVariance(req: Dict[Any, Any] = None):
 
 @app.post("/buildColumn/")
 def buildColumn(data: Dict[Any, Any] = None):
-    predata, postdata, key = data['predata'], data['postdata'], data['key']
+    
+    res = {}
     # predata = urllib.parse.unquote(predata)
     # predata = ast.literal_eval(predata)
     # postdata = urllib.parse.unquote(postdata)
     # postdata = ast.literal_eval(postdata)
+    for key, value in data.items():
+        res[key] = getMeanAndVariance({'data': [item[0] for item in value]})
 
-    query_pre = f"MATCH (n:PreData)\
-              WHERE n.Sample_ID IN {str(predata)}\
-              RETURN COLLECT(n.`{key}`) AS data"
-
-    query_post = f"MATCH (n:PostData)\
-              WHERE n.Sample_ID IN {str(postdata)}\
-              RETURN COLLECT(n.`{key}`) AS data"
-
-    result_pre = GRAPH_CRYO.run(query_pre).data()[0]['data']
-    result_post = GRAPH_CRYO.run(query_post).data()[0]['data']
-
-    return {
-        "pre_data": getMeanAndVariance({'data': result_pre}),
-        "post_data": getMeanAndVariance({'data': result_post}),
-        "post/pre": getMeanAndVariance({'data': [f"{(float(item)*100)/float(np.mean([float(item) for item in result_pre])):.4f}" for item in result_post]})
-    }
+    return res
 
 
 @app.post("/buildAnovaTable/")
