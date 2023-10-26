@@ -271,7 +271,7 @@ def queryOneCPA(ID):
     return result
 
 
-@app.post("/queryTheFourElements")
+@app.post("/queryTheFourElements/")
 def queryTheFourElements(data: Dict[Any, Any] = None):
     predata, postdata = data['predata'], data['postdata']
     keys = ['Viability_(%)', 'Total_viable_cells_/_ml_(x_10^6)', 'Average_circularity', 'Average_diameter_(microns)']
@@ -343,59 +343,27 @@ def buildColumn(data: Dict[Any, Any] = None):
     return res
 
 
-@app.post("/buildAnovaTable/")
-def buildAnovaTable(data: Dict[Any, Any] = None):
-    postdata, predata, key = data['postdata'], data['predata'], data['key']
-    # postdata = urllib.parse.unquote(postdata)
-    # postdata = ast.literal_eval(postdata)\\
-    ppdata = {}
-    for _key in list(postdata.keys()):
-        su = []
-        for i, p in enumerate(postdata[_key]):
-            query_post = f"MATCH (n:PostData)\
-                WHERE n.Sample_ID IN {str(p)}\
-                RETURN COLLECT(n.`{key}`) AS data"
-            query_pre = f"MATCH (n:PreData)\
-                WHERE n.Sample_ID IN {str(predata[_key][i])}\
-                RETURN COLLECT(n.`{key}`) AS data"
-            postdata[_key][i] = GRAPH_CRYO.run(query_post).data()[0]['data']
-            mean = np.mean(
-                [float(item) for item in GRAPH_CRYO.run(query_pre).data()[0]['data']])
-            su.append([str((float(item)*100)/mean)
-                      for item in postdata[_key][i]])
-        ppdata[_key] = su
-    for _key in list(postdata.keys()):
-        postdata[_key] = [item for sublist in postdata[_key]
-                          for item in sublist]
-        ppdata[_key] = [item for sublist in ppdata[_key] for item in sublist]
-
-    return {
-        "post": anovaTest(str(postdata)),
-        "post/pre": anovaTest(str(ppdata))
-    }
-
-
-@app.get("/anovaTest/{daten}")
-def anovaTest(daten):
-    daten = urllib.parse.unquote(daten)
-    daten = ast.literal_eval(daten)
-    # data_dict = ast.literal_eval(data_str)
-    # print(data_dict)
-    keys = list(daten.keys())
-    data = list(daten.values())
-
+@app.post("/anovaTest/")
+def anovaTest(data: Dict[Any, Any] = None):
+    # daten = urllib.parse.unquote(daten)
+    # daten = ast.literal_eval(daten)
+    # # data_dict = ast.literal_eval(data_str)
+    # # print(data_dict)
+    keys = list(data.keys())
+    # data = list(daten.values())
     result = {}
 
-    # ANOVA
-    f_statistic, p_value = f_oneway(*data)
+    data_anova = [[float(item[0]) for item in data[key]] for key in keys]
 
-    result["F-statistic"] = round(f_statistic, 4)
-    result["p-value"] = round(p_value, 4)
+    # ANOVA
+    result["F-statistic"], result["p-value"] = f_oneway(*data_anova)
+
     # Tukey's HSD
     tukey_results = pairwise_tukeyhsd([float(n) for n in np.concatenate(
-        data)], np.repeat(keys, [len(d) for d in data]), 0.05)
+        data_anova)], np.repeat(keys, [len(d) for d in data_anova]), 0.05)
     df = pandas.DataFrame(
         data=tukey_results._results_table.data[1:], columns=tukey_results._results_table.data[0])
+    df['p-adj'] = tukey_results.pvalues
     result["Tukey HSD 0.05"] = list(df.to_dict(orient='index').values())
     result['Tukey Group'] = generate_tukey_subscripts(df)
     return result
@@ -436,12 +404,12 @@ def generate_tukey_subscripts(tukey_result_df):
                         (tukey_result_df["group2"] == sorted_groups[i]) & (tukey_result_df["group1"] == sorted_groups[j])),
                     "p-adj"
                 ].iloc[0]
-                if p_value <= 0.05:
-                    if p_value <= 0.01:
+                if p_value >= 0.01:
+                    if p_value >= 0.05:
                         result_group[sorted_groups[j]
-                                     ] += letters[index].upper()
+                                     ] += letters[index]
                     else:
-                        result_group[sorted_groups[j]] += letters[index]
+                        result_group[sorted_groups[j]] += letters[index].upper()
         if any(value == '' for value in result_group.values()):
             index += 1
         else:
