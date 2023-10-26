@@ -3,18 +3,18 @@ import random
 from data_to_db import FeedIntoNeo4j
 from main import *
 
-cleanLog('log_build')
-cleanLog('log_load')
-cleanLog('log_save')
-cleanLog('log_upload')
+# cleanLog('log_build')
+# cleanLog('log_load')
+# cleanLog('log_save')
+# cleanLog('log_upload')
 
 # deleteDataStore('data_store')
 # buildDataStore('data_store')
 
-cleanDatabase('cpa')
-initDatabase('cpa')
-cleanDatabase('cryo')
-initDatabase('cryo')
+# cleanDatabase('cpa')
+# initDatabase('cpa')
+# cleanDatabase('cryo')
+# initDatabase('cryo')
 
 
 # print(FeedIntoNeo4j('predata', 'data_store\pre_data\EQ20220824A1-Pre1.txt').feed_to_neo4j())
@@ -44,7 +44,10 @@ initDatabase('cryo')
 #     # Tukey's HSD
 #     tukey_results = pairwise_tukeyhsd(np.concatenate(
 #         data), np.repeat(keys, [len(d) for d in data]), 0.05)
-
+#     print()
+#     df = pandas.DataFrame(
+#         data=tukey_results._results_table.data[1:], columns=tukey_results._results_table.data[0])
+#     df['p-adj'] = tukey_results.pvalues
 #     result["Tukey HSD"] = tukey_results
 
 #     return result
@@ -58,16 +61,16 @@ initDatabase('cryo')
 
 # result = perform_anova(daten)
 # print(result['Tukey HSD'])
+# print(result)
 
+# def independent_ttest(data1, data2, alpha=0.05):
+#     t_statistic, p_value = ttest_ind(data1, data2)
 
-# # def independent_ttest(data1, data2, alpha=0.05):
-# #     t_statistic, p_value = ttest_ind(data1, data2)
+#     is_significant = p_value < alpha
 
-# #     is_significant = p_value < alpha
+#     return t_statistic, p_value, is_significant
 
-# #     return t_statistic, p_value, is_significant
-
-# # print(independent_ttest(daten['data_A'], daten['data_B']))
+# print(independent_ttest(daten['data_A'], daten['data_B']))
 
 # def generate_tukey_subscripts(tukey_result_df):
 
