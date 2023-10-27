@@ -324,29 +324,18 @@ def getMeanAndVariance(req: Dict[Any, Any] = None):
     median = np.percentile(data, 50)  
     q3 = np.percentile(data, 75) 
     iqr = q3 - q1  
-    low = q1 - 1.5 * iqr 
-    high = q3 + 1.5 * iqr
     lower_bound = q1 - 1.5 * iqr
     upper_bound = q3 + 1.5 * iqr
-    print({
-        "mean": f"{mean:.4f}",
-        "variance": f"{variance:.4f}",
-        "SD": f"{standard_deviation:.4f}",
-        "SE": f"{standard_error:.4f}",
-        f"CI {confidence_level * 100:.0f}%": f"[{confidence_interval[0]:.2f}, {confidence_interval[1]:.2f}]",
-        'low': f"{low:.4f}",
-        'q1': f"{q1:.4f}",
-        'median': f"{median:.4f}",
-        'q3': f"{q3:.4f}",
-        'high': f"{high:.4f}",
-        'outliers': [np.round(x,4) for x in data if x < lower_bound or x > upper_bound]
-    })
+    low = min([np.round(x,4) for x in data if x >= lower_bound])
+    high = max([np.round(x,4) for x in data if x <= upper_bound])
+
     return {
+        "n": f"{n}",
         "mean": f"{mean:.4f}",
         "variance": f"{variance:.4f}",
         "SD": f"{standard_deviation:.4f}",
         "SE": f"{standard_error:.4f}",
-        f"CI {confidence_level * 100:.0f}%": f"[{confidence_interval[0]:.2f}, {confidence_interval[1]:.2f}]",
+        f"CI {confidence_level * 100:.0f}%": [np.round(confidence_interval[0], 4), np.round(confidence_interval[1], 4)],
         'low': f"{low:.4f}",
         'q1': f"{q1:.4f}",
         'median': f"{median:.4f}",
