@@ -244,6 +244,9 @@ def queryOneExperiment(ID):
     try:
         result['child'] = sorted(
             result['child'], key=lambda child: child['versuch']['Versuch_ID'])
+        for versuch in result['child']:
+            versuch['probes'] = sorted(versuch['probes'], key=lambda probe: probe['Sample_ID'])
+
     except:
         pass
     return result
