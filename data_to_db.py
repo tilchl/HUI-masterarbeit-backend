@@ -38,7 +38,10 @@ class FeedIntoNeo4j:
                 if self.data_path.split('/')[4].lower() == 'predata' or self.data_path.split('/')[5].lower() == 'predata':
                     config_data = load_config_data('PreData')
                     loaded_data = load_pre_data(self.data_path, config_data)
-                if self.data_path.split('/')[5].lower() == 'postdata':
+                if self.data_path.split('/')[4].lower() == 'pre' or self.data_path.split('/')[5].lower() == 'pre':
+                    config_data = load_config_data('PreData')
+                    loaded_data = load_pre_data(self.data_path, config_data)
+                if self.data_path.split('/')[5].lower() == 'postdata' or self.data_path.split('/')[5].lower() == 'post':
                     config_data = load_config_data('PostData')
                     loaded_data = load_post_data(self.data_path, config_data)
                 if self.data_path.split('/')[5].lower() in ['process', 'prozess']:
@@ -70,12 +73,16 @@ class FeedIntoNeo4j:
                 experiment_id = os.path.basename(self.data_path).rsplit(".",1)[0]
                 return dict_to_neo_expriment(GRAPH_CRYO, loaded_data, experiment_id)
             else:
+                print(self.data_path.split('/'))
                 if self.data_path.split('/')[4].lower() == 'predata' or self.data_path.split('/')[5].lower() == 'predata':
                     return dict_to_neo_predata(GRAPH_CRYO, loaded_data)
-                if self.data_path.split('/')[5].lower() == 'postdata':
+                if self.data_path.split('/')[4].lower() == 'pre' or self.data_path.split('/')[5].lower() == 'pre':
+                    return dict_to_neo_predata(GRAPH_CRYO, loaded_data)
+                if self.data_path.split('/')[5].lower() == 'postdata' or self.data_path.split('/')[5].lower() == 'post':
                     return dict_to_neo_postdata(GRAPH_CRYO, loaded_data)
                 if self.data_path.split('/')[5].lower() in ['process', 'prozess']:
                     return dict_to_neo_process(GRAPH_CPA, loaded_data)
                 if self.data_path.split('/')[5].lower() == 'cpa':
                     child = self.data_path.split('/')[7]
                     return dict_to_neo_cpa(GRAPH_CPA, loaded_data, child)
+                

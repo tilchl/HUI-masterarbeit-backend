@@ -8,7 +8,7 @@ def preprocessing_exp_upload(files, data_store):
         filename = files[0].filename.split('/')[0] + '.json'
         items = []
         for file in files:
-            fn = file.filename.replace('Predata', 'PreData').replace('Postdata', 'PostData').replace('Prozess', 'Process')
+            fn = file.filename.replace('Predata', 'PreData').replace('Postdata', 'PostData').replace('Prozess', 'Process').replace('Pre', 'PreData').replace('Post', 'PostData')
             items.append(fn.split('/'))
         
         data_by_second_element = {}
