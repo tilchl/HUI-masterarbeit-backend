@@ -3,18 +3,18 @@ import random
 from data_to_db import FeedIntoNeo4j
 from main import *
 
-# cleanLog('log_build')
-# cleanLog('log_load')
-# cleanLog('log_save')
-# cleanLog('log_upload')
+cleanLog('log_build')
+cleanLog('log_load')
+cleanLog('log_save')
+cleanLog('log_upload')
 
-# deleteDataStore('data_store')
-# buildDataStore('data_store')
+deleteDataStore('data_store')
+buildDataStore('data_store')
 
-# cleanDatabase('cpa')
-# initDatabase('cpa')
-# cleanDatabase('cryo')
-# initDatabase('cryo')
+cleanDatabase('cpa')
+initDatabase('cpa')
+cleanDatabase('cryo')
+initDatabase('cryo')
 
 
 # print(FeedIntoNeo4j('predata', 'data_store\pre_data\EQ20220824A1-Pre1.txt').feed_to_neo4j())

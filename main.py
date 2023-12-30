@@ -291,10 +291,8 @@ def queryTheFourElements(data: Dict[Any, Any] = None):
         query_post = f"MATCH (n:PostData)\
                 WHERE n.Sample_ID IN {str(postdata)}\
                 RETURN COLLECT(n.`{key}`) AS data"
-
         result_pre = GRAPH_CRYO.run(query_pre).data()[0]['data']
         result_post = GRAPH_CRYO.run(query_post).data()[0]['data']
-
         results_output[f'average_{key}_pre'] = getMeanAndVariance({'data': result_pre})['mean']
 
         for index, pre_id in enumerate(predata):

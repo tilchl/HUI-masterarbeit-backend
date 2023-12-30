@@ -73,7 +73,6 @@ class FeedIntoNeo4j:
                 experiment_id = os.path.basename(self.data_path).rsplit(".",1)[0]
                 return dict_to_neo_expriment(GRAPH_CRYO, loaded_data, experiment_id)
             else:
-                print(self.data_path.split('/'))
                 if self.data_path.split('/')[4].lower() == 'predata' or self.data_path.split('/')[5].lower() == 'predata':
                     return dict_to_neo_predata(GRAPH_CRYO, loaded_data)
                 if self.data_path.split('/')[4].lower() == 'pre' or self.data_path.split('/')[5].lower() == 'pre':
