@@ -277,7 +277,7 @@ def queryOneCPA(ID):
 @app.post("/queryTheFourElements/")
 def queryTheFourElements(data: Dict[Any, Any] = None):
     predata, postdata = data['predata'], data['postdata']
-    keys = ['Viability_(%)', 'Total_viable_cells_/_ml_(x_10^6)', 'Average_circularity', 'Average_diameter_(microns)']
+    keys = ['Viability_(%)', 'Viable_cells', 'Average_circularity', 'Average_diameter_(microns)'] # 'Total_viable_cells_/_ml_(x_10^6)'
     results_output = {}
     for index, pre_id in enumerate(predata):
         results_output[pre_id] = {}
@@ -294,6 +294,8 @@ def queryTheFourElements(data: Dict[Any, Any] = None):
         result_pre = GRAPH_CRYO.run(query_pre).data()[0]['data']
         result_post = GRAPH_CRYO.run(query_post).data()[0]['data']
         results_output[f'average_{key}_pre'] = getMeanAndVariance({'data': result_pre})['mean']
+        if key =='Viable_cells':
+            print(result_pre,result_post)
 
         for index, pre_id in enumerate(predata):
             results_output[pre_id][key] = result_pre[index]
