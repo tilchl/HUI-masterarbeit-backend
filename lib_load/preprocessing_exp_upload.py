@@ -2,14 +2,19 @@ import datetime
 import os
 import json
 
+F_FACTORS_PATH = None
 
 def preprocessing_exp_upload(files, data_store):
     try:
         filename = files[0].filename.split('/')[0] + '.json'
         items = []
+        F_FACTORS_PATH = None
         for file in files:
             fn = file.filename.replace('/Predata/', '/PreData/').replace('/Postdata/', '/PostData/').replace('/Prozess/', '/Process/').replace('/Pre/', '/PreData/').replace('/Post/', '/PostData/')
-            items.append(fn.split('/'))
+            if fn.split('/')[-1] != 'F.txt':
+                items.append(fn.split('/'))
+            else:
+                F_FACTORS_PATH = f"{data_store}/Experiment/{fn}"
         
         data_by_second_element = {}
 
@@ -79,6 +84,10 @@ def preprocessing_exp_upload(files, data_store):
                         probe_data[f"{task} ID"] = sorted(probe_data.pop(task))
 
         with open(f'{data_store}/Experiment/{filename}', 'wb') as f:
+            if F_FACTORS_PATH:
+                f_factors = load_F(F_FACTORS_PATH)
+                for key in contents.keys():
+                    contents[key]["F_factor"] = str(f_factors[contents[key]["Versuche ID"]])
             f.write(json.dumps(contents).encode('utf-8'))
 
         with open('log/log_load.txt', 'a+') as file:
@@ -92,3 +101,12 @@ def preprocessing_exp_upload(files, data_store):
             file.write(
                 f"{datetime.datetime.now()} ERROR ON GENERATE EXP DATA: {filename}: {e} \n")
         return {'file_name': filename, 'result': 'error', 'neo4j': 'undo'}
+
+
+def load_F(file_path):
+    data_dict = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            key, value = line.strip().split(": ")
+            data_dict[key] = int(value)
+    return data_dict

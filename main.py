@@ -178,7 +178,10 @@ def feedInNeo(data_type, file_name, data_store):
         elif data_type == 'ExperimentCreate':
             return FeedIntoNeo4j(data_type, f'{data_store}/Experiment/{file_name}').feed_to_neo4j()
         elif data_type == 'ExperimentUpload':
-            return FeedIntoNeo4j(data_type, f'{data_store}/Experiment/{file_name}').feed_to_neo4j()
+            if file_name.split('/')[-1] == 'F.txt':
+                return 'success'
+            else:
+                return FeedIntoNeo4j(data_type, f'{data_store}/Experiment/{file_name}').feed_to_neo4j()
         else:
             return FeedIntoNeo4j(data_type, f'{data_store}/{data_type}/{file_name}').feed_to_neo4j()
     except Exception as e:
@@ -294,8 +297,6 @@ def queryTheFourElements(data: Dict[Any, Any] = None):
         result_pre = GRAPH_CRYO.run(query_pre).data()[0]['data']
         result_post = GRAPH_CRYO.run(query_post).data()[0]['data']
         results_output[f'average_{key}_pre'] = getMeanAndVariance({'data': result_pre})['mean']
-        if key =='Viable_cells':
-            print(result_pre,result_post)
 
         for index, pre_id in enumerate(predata):
             results_output[pre_id][key] = result_pre[index]
@@ -463,7 +464,7 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
         if todo['class'] == 'Versuch':
             graph = GRAPH_CRYO
             versuch_node = Node('Versuch', Versuch_ID=todo["info"]["Versuche ID"],
-                                Unique_ID=f'{todo["father"]["Unique_ID"]}*-*{todo["info"]["Versuche ID"]}')
+                                Unique_ID=f'{todo["father"]["Unique_ID"]}*-*{todo["info"]["Versuche ID"]}', F_factor = todo["info"]["F_factor"])
             try:
                 experiment_node = graph.nodes.match(
                     'Experiment', Experiment_ID=todo['father']['Unique_ID']).first()
@@ -473,7 +474,7 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
             except:
                 create_versuch_result = False
             try: 
-                for probe in list((todo['info']).keys())[1:]:
+                for probe in list((todo['info']).keys())[2:]:
                     probe_node = Node('Probe', **{k.replace(' ', '_'): str(v) if isinstance(v, dict) else v for k, v in todo['info'][probe].items(
                     )}, Unique_ID=f"{todo['father']['Unique_ID']}*-*{todo['info']['Versuche ID']}*-*{todo['info'][probe]['Sample ID']}")
 

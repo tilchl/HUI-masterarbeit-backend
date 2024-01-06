@@ -35,13 +35,15 @@ def dict_to_neo_expriment(graph, dict_body, experiment_id):
         infos = []
         for versuch in dict_body:
             if versuch !='Experiment ID':
-                versuch_node = Node('Versuch',Versuch_ID = dict_body[versuch]['Versuche ID'], Unique_ID = f"{experiment_id}*-*{dict_body[versuch]['Versuche ID']}")
+                versuch_node = Node('Versuch',Versuch_ID = dict_body[versuch]['Versuche ID'], Unique_ID = f"{experiment_id}*-*{dict_body[versuch]['Versuche ID']}", F_factor = dict_body[versuch]['F_factor'])
                 
                 experiment_node = graph.nodes.match('Experiment', Experiment_ID = experiment_id).first()
                 graph.create(Relationship(versuch_node, 'versuch_of_experiment', experiment_node))
 
                 for probe in dict_body[versuch]:
                     if probe == 'Versuche ID':
+                        continue
+                    elif probe == 'F_factor':
                         continue
                     else:
                         with open(f'log/log_exps/log_{experiment_id}.txt', 'a+') as file:
