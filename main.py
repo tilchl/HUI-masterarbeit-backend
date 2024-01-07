@@ -587,15 +587,15 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
                     """)
             result['deletion']['childrenNodes'].append('success' if check_status_setAndDelete(result_567) else 'error')
 
+    deletion['fatherNodes'] = sorted(deletion['fatherNodes'], key=custom_sort_key1)
     for todo in deletion['fatherNodes']:
-        if todo['nodeClass'] == 'Versuch':
-            result_576 = GRAPH_CRYO.run(f"""
-                        MATCH (n: Versuch)
+        if todo['nodeClass'] == 'Probe':
+            result_593 = GRAPH_CRYO.run(f"""
+                        MATCH (n: Probe)
                         WHERE n.Unique_ID = "{todo['Unique_ID']}"
-                        OPTIONAL MATCH (n)--(p:Probe)
-                        DETACH DELETE n, p
+                        DETACH DELETE n
                     """)
-            result['deletion']['fatherNodes'].append('success' if check_status_setAndDelete(result_576) else 'error')
+            result['deletion']['fatherNodes'].append('success' if check_status_setAndDelete(result_593) else 'error')
         elif todo['nodeClass'] == 'Experiment':
             result_584 = GRAPH_CRYO.run(f"""
                         MATCH (e: Experiment)
@@ -605,13 +605,14 @@ def addDelModi(todoSQL: Dict[Any, Any] = None):
                         DETACH DELETE e, v, p
                     """)
             result['deletion']['fatherNodes'].append('success' if check_status_setAndDelete(result_584) else 'error')
-        elif todo['nodeClass'] == 'Probe':
-            result_593 = GRAPH_CRYO.run(f"""
-                        MATCH (n: Probe)
+        elif todo['nodeClass'] == 'Versuch':
+            result_576 = GRAPH_CRYO.run(f"""
+                        MATCH (n: Versuch)
                         WHERE n.Unique_ID = "{todo['Unique_ID']}"
-                        DETACH DELETE n
+                        OPTIONAL MATCH (n)--(p:Probe)
+                        DETACH DELETE n, p
                     """)
-            result['deletion']['fatherNodes'].append('success' if check_status_setAndDelete(result_593) else 'error')
+            result['deletion']['fatherNodes'].append('success' if check_status_setAndDelete(result_576) else 'error')
         elif todo['nodeClass'] == 'CPA':
             result_600 = GRAPH_CPA.run(f"""
                         MATCH (c: CPA)
@@ -760,6 +761,25 @@ def check_status_setAndDelete(runResult):
 
 def custom_sort_key(input_item):
     item = input_item['class']
+    if item == 'PreData':
+        return (0, item)
+    elif item == 'PostData':
+        return (1, item)
+    elif item == 'Process':
+        return (2, item)
+    elif item == 'Probe':
+        return (4, item)
+    elif item == 'Versuch':
+        return (5, item)
+    elif item == 'Experiment':
+        return (6, item)
+    elif item == 'CPA':
+        return (7, item)
+    else:
+        return (3, item)
+    
+def custom_sort_key1(input_item):
+    item = input_item['nodeClass']
     if item == 'PreData':
         return (0, item)
     elif item == 'PostData':
