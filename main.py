@@ -280,7 +280,7 @@ def queryOneCPA(ID):
 @app.post("/queryTheFourElements/")
 def queryTheFourElements(data: Dict[Any, Any] = None):
     predata, postdata = data['predata'], data['postdata']
-    keys = ['Viability_(%)', 'Viable_cells', 'Average_circularity', 'Average_diameter_(microns)'] # 'Total_viable_cells_/_ml_(x_10^6)'
+    keys = ['Viability_(%)', 'Total_viable_cells_/_ml_(x_10^6)', 'Average_circularity', 'Average_diameter_(microns)'] # 'Total_viable_cells_/_ml_(x_10^6)'
     results_output = {}
     for index, pre_id in enumerate(predata):
         results_output[pre_id] = {}
@@ -289,20 +289,21 @@ def queryTheFourElements(data: Dict[Any, Any] = None):
     for key in keys:
         query_pre = f"MATCH (n:PreData)\
                 WHERE n.Sample_ID IN {str(predata)}\
-                RETURN COLLECT(n.`{key}`) AS data"
+                RETURN COLLECT(n.`{key}`) AS data, COLLECT(n.Sample_ID) AS IDs"
 
         query_post = f"MATCH (n:PostData)\
                 WHERE n.Sample_ID IN {str(postdata)}\
-                RETURN COLLECT(n.`{key}`) AS data"
-        result_pre = GRAPH_CRYO.run(query_pre).data()[0]['data']
-        result_post = GRAPH_CRYO.run(query_post).data()[0]['data']
-        results_output[f'average_{key}_pre'] = getMeanAndVariance({'data': result_pre})['mean']
+                RETURN COLLECT(n.`{key}`) AS data, COLLECT(n.Sample_ID) AS IDs"
+        result_pre = GRAPH_CRYO.run(query_pre).data()[0]
+        print(result_pre)
+        result_post = GRAPH_CRYO.run(query_post).data()[0]
+        results_output[f'average_{key}_pre'] = getMeanAndVariance({'data': result_pre['data']})['mean']
 
-        for index, pre_id in enumerate(predata):
-            results_output[pre_id][key] = result_pre[index]
-        for index, post_id in enumerate(postdata):
-            results_output[post_id][key] = result_post[index]
-            results_output[post_id][f'{key}_relative'] = f"{(float(result_post[index]) / float(results_output[f'average_{key}_pre'])):.4f}"
+        for index, pre_id in enumerate(result_pre['IDs']):
+            results_output[pre_id][key] = result_pre['data'][index]
+        for index, post_id in enumerate(result_post['IDs']):
+            results_output[post_id][key] = result_post['data'][index]
+            results_output[post_id][f'{key}_relative'] = f"{(float(result_post['data'][index]) / float(results_output[f'average_{key}_pre'])):.4f}"
 
     return results_output
 
