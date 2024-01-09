@@ -295,15 +295,18 @@ def queryTheFourElements(data: Dict[Any, Any] = None):
                 WHERE n.Sample_ID IN {str(postdata)}\
                 RETURN COLLECT(n.`{key}`) AS data, COLLECT(n.Sample_ID) AS IDs"
         result_pre = GRAPH_CRYO.run(query_pre).data()[0]
-        print(result_pre)
         result_post = GRAPH_CRYO.run(query_post).data()[0]
         results_output[f'average_{key}_pre'] = getMeanAndVariance({'data': result_pre['data']})['mean']
-
+        results_output[f'average_{key}_post'] = getMeanAndVariance({'data': result_post['data']})['mean']
+        average_pp = []
         for index, pre_id in enumerate(result_pre['IDs']):
             results_output[pre_id][key] = result_pre['data'][index]
         for index, post_id in enumerate(result_post['IDs']):
             results_output[post_id][key] = result_post['data'][index]
-            results_output[post_id][f'{key}_relative'] = f"{(float(result_post['data'][index]) / float(results_output[f'average_{key}_pre'])):.4f}"
+            relativ = f"{(float(result_post['data'][index]) / float(results_output[f'average_{key}_pre'])):.4f}"
+            results_output[post_id][f'{key}_relative'] = relativ
+            average_pp.append(relativ)
+        results_output[f'average_{key}_pp'] = getMeanAndVariance({'data': average_pp})['mean']
 
     return results_output
 
