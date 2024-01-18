@@ -4,6 +4,7 @@ import os
 
 def load_pre_data(data_path, dict_body):
     try:
+        dict_body["Sample ID"] = os.path.basename(data_path).rsplit('.', 1)[0]
         with open(data_path, "r", encoding='utf-8') as file:
             lines = file.readlines()
             dict_body['Machine'] = lines[0].strip()
