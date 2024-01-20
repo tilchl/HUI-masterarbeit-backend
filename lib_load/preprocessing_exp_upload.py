@@ -108,5 +108,5 @@ def load_F(file_path):
     with open(file_path, 'r') as file:
         for line in file:
             key, value = line.strip().split(": ")
-            data_dict[key] = int(value)
+            data_dict[key] = int(value) if '.' not in value else float(value)
     return data_dict
