@@ -1,0 +1,32 @@
+<div class="content" role="main">
+    <div class="check-box">
+        <app-unit-backend-check></app-unit-backend-check>
+    </div>
+    <div style="height: 20px;"></div>
+    <mat-divider></mat-divider>
+
+    <div class="main">
+        <div class="top">
+            <div *ngFor="let key of getObjectKeys(listItems)" class="top-content">
+                <h2>{{ key | uppercase }}:</h2>
+                <mat-button-toggle-group>
+                    <mat-button-toggle *ngFor="let value of listItems[key]" (click)="setWhich(value)">
+                        <span *ngIf="value == which[0]" class="focus">{{ value | uppercase }}</span>
+                        <span *ngIf="value != which[0]">{{ value }}</span>
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+            <mat-divider></mat-divider>
+        </div>
+        <div *ngIf="which[0]"></div>
+
+        <app-unit-data-upload *ngIf="which[0] === 'CPA'" [onlyDir]="true" [allowMultiple]="false" [allowFolder]="true"
+            [data_type]="'CPA'"></app-unit-data-upload>
+        <app-unit-data-upload *ngIf="which[0] === 'Experiment'" [onlyDir]="true" [allowMultiple]="false" [allowFolder]="true"
+            [data_type]="'Experiment'"></app-unit-data-upload>
+        <app-unit-data-upload *ngIf="which[0] != 'CPA' && which[0] != 'Experiment'" [onlyDir]="false" [allowMultiple]="true" [allowFolder]="true"
+            [data_type]="which[0]"></app-unit-data-upload>
+
+    </div>
+
+</div>

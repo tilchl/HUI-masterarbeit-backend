@@ -1,0 +1,8 @@
+{
+    "profile_cryo": "bolt://db:7687",
+    "username_cryo": "neo4j",
+    "password_cryo": "test_cryo",
+    "profile_cpa": "bolt://db:7687",
+    "username_cpa": "neo4j",
+    "password_cpa": "test_cpa"
+}

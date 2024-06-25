@@ -1,0 +1,291 @@
+label {
+    margin-right: 10px;
+}
+
+.label-create {
+    display: inline-block;
+    padding: 10px;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+}
+
+.label-reload {
+    display: inline-block;
+    padding: 5px 10px;
+    color: #1976d2;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    transform: translateX(8px);
+    text-decoration: underline;
+}
+
+pre {
+    font-weight: bold;
+}
+
+h2 {
+    font-weight: normal;
+    padding: 10px 0px 10px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.option-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+
+.successfile {
+    margin-right: 30px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    color: green;
+}
+
+.errorfile,
+.see-error-detailfile,
+.path-errorfile,
+.undofile {
+    margin-right: 30px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    color: red;
+}
+
+.existsfile {
+    margin-right: 30px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    color: #DDAA00;
+}
+
+.waitingfile {
+    margin-right: 30px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    color: #1976d2;
+}
+
+.tab-box {
+    max-height: 400px;
+    overflow-y: scroll;
+    width: 100%;
+}
+
+mat-error {
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    margin-left: 10px;
+    display: block;
+}
+
+.file-box {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #e2e2e2;
+    color: black;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    position: relative;
+    ;
+    /* border:solid 1px;
+    border-radius: 4px; */
+}
+
+.add-new {
+    cursor: pointer;
+    color: rgb(0, 162, 255);
+}
+
+.add-delete,
+.table-li .add-delete {
+    cursor: pointer;
+    color: red;
+    float: right;
+    width: 50px;
+    margin-left: 10%;
+}
+
+.add-return,
+.table-li .add-return {
+    cursor: pointer;
+    color: green;
+    float: right;
+    width: 50px;
+    margin-left: 10%;
+}
+
+.table-li .add-delete,
+.table-li .add-return {
+    margin-left: 6px;
+}
+
+li,
+.table-li {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    transform: translateX(-20px);
+    min-width: 550px;
+}
+
+.table-versuch {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: space-between;
+    transform: translateX(0px);
+    min-width: 550px;
+}
+
+.table-probes {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-between;
+    transform: translateX(-20px);
+    min-width: 550px;
+}
+
+li label,
+li u {
+    flex: 0 0 auto;
+}
+
+.position-holder {
+    flex-grow: 1;
+    margin:0px
+}
+
+
+.red-line,
+.red-line-big {
+    position: absolute;
+    width: calc(100% - 50px);
+    height: calc(100% + 2px);
+    background-color: #e2e2e2;
+    z-index: 999;
+}
+
+.red-line-big {
+    width: calc(100% + 6px);
+    z-index: 999;
+}
+
+.edit {
+    margin-left: 20px;
+    color: chocolate;
+    cursor: url('../../assets/create_black_24dp.svg'), crosshair;
+}
+
+.type-box {
+    transform: translateY(0px);
+    margin-right: 10px;
+}
+
+.table-line-head {
+    text-align: right;
+    width: 40px;
+}
+
+.table-line,
+.table-head,
+.probe-li {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    flex-grow: 1;
+    width: 100px;
+}
+
+.table-cell {
+    width: 20%;
+    text-align: center;
+    border: solid;
+    border-color: black;
+    border-width: 1px;
+    display: block;
+    position: relative;
+}
+
+.table-head .table-cell {
+    color: black;
+    font-weight: normal;
+    z-index: 0;
+}
+
+.option {
+    margin: 0px;
+    padding: 0px;
+    font-size: small;
+}
+
+textarea {
+    min-height: 20px;
+    padding: 0px;
+    flex-grow: 1;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    padding: 0px 4px;
+}
+
+.textarea-shell,
+app-unit-show-in-table {
+    flex-grow: 1;
+}
+
+li {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.exp-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
+
+.table-cell-input {
+    width: 20%;
+    text-align: center;
+    border: solid;
+    border-color: black;
+    border-width: 1px;
+    display: block;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+::ng-deep .mat-mdc-select-min-line {
+    display: block;
+    margin-bottom: 0px;
+    white-space: normal;
+}
+
+.select-menu {
+    background-color: white;
+    height: 100%;
+}
+
+::ng-deep .mat-mdc-select-trigger {
+    height: 100%;
+}
+
+.doingfile{
+    margin-right: 30px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    color: #1976d2;
+}

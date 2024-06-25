@@ -1,0 +1,130 @@
+.hidden-upload {
+    position: absolute;
+    clip: rect(0 0 0 0);
+}
+
+.label-up, .label-up-cpa {
+    display: inline-block;
+    padding: 10px;
+    background-color: #eeeded;
+    border:dashed;
+    border-width: 1px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    width: 100px;
+    line-height: 20px;
+    height: 20px;
+    margin: 20px;
+}
+
+.label-up-cpa{
+    height: 80px;
+    width: 160px;
+    line-height: 20px;
+}
+
+.label-up:hover, .label-up-cpa:hover {
+    opacity: 0.5;
+}
+
+.pending {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    float: left;
+    margin-right: 10px;
+}
+
+.success,
+.exists {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #4caf50;
+    float: left;
+    margin-right: 10px;
+}
+
+.error {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #f44336;
+    float: left;
+    margin-right: 10px;
+}
+
+.spinner {
+    transform: translateY(-2px) translateX(-2px);
+}
+
+.spinner::ng-deep circle {
+    stroke: #1976d2 !important;
+}
+
+.sign-in-main {
+    transform: translateX(6px) translateY(2px);
+}
+
+.box {
+    padding: 0px;
+}
+
+.option-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+
+.successfile {
+    margin-right: 30px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    color: green;
+}
+
+.errorfile,
+.see-error-detailfile,
+.path-errorfile, .undofile {
+    margin-right: 30px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    color: red;
+}
+
+.existsfile {
+    margin-right: 30px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    color: #DDAA00;
+}
+
+.waitingfile {
+    margin-right: 30px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    color: #1976d2;
+}
+
+.doingfile{
+    margin-right: 30px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    color: #1976d2;
+}
+
+pre {
+    font-weight: bold;
+}
+
+h2 {
+    font-weight: normal;
+    padding: 10px 0px 10px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.tab-box {
+    max-height: 400px;
+    overflow-y: scroll;
+    width: 100%;
+}

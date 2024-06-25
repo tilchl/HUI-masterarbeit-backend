@@ -1,0 +1,40 @@
+<mat-accordion>
+    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header>
+                <div [ngSwitch]="connectionStatus" class="status-bar">
+                    <div title="Server Status" [ngClass]="connectionStatus" class="sign-in-main"><mat-spinner mode="indeterminate" [diameter]="13" class="spinner"
+                            *ngIf="connectionStatus == 'pending'"></mat-spinner></div>
+                    <pre *ngSwitchDefault class="basic">Checking Database...</pre>
+                    <pre *ngSwitchCase="'success'" class="connected">Database status: healthy</pre>
+                    <pre *ngSwitchCase="'error'" class="disconnected">Database status: abnormal</pre>
+                </div>
+        </mat-expansion-panel-header>
+        <!-- Terminal -->
+        <div class="terminal">
+            <div>
+                <pre>Connection Check:</pre>
+            </div>
+            <div [ngSwitch]="checkItems['cryoConnection']">
+                <div title="Server Status" [ngClass]="checkItems['cryoConnection']"><mat-spinner mode="indeterminate" [diameter]="13"
+                        class="spinner" *ngIf="checkItems['cryoConnection'] == 'pending'"></mat-spinner></div>
+                <pre *ngSwitchDefault>Trying: Connect to Database 'cryo'...</pre>
+                <pre *ngSwitchCase="'success'">Success: Connected to Database 'cryo'.</pre>
+                <pre *ngSwitchCase="'error'">Error: Loss Connection to Database 'cryo'.</pre>
+            </div>
+            <div *ngIf="checkItems['cryoConnection'] == 'success'">
+                <pre>{{ checkItems['cryoData'] | json }}</pre>
+            </div>
+
+            <div [ngSwitch]="checkItems['cpaConnection']">
+                <div title="Server Status" [ngClass]="checkItems['cpaConnection']"><mat-spinner mode="indeterminate" [diameter]="13"
+                        class="spinner" *ngIf="checkItems['cpaConnection'] == 'pending'"></mat-spinner></div>
+                <pre *ngSwitchDefault>Trying: Connect to Database 'cpa'...</pre>
+                <pre *ngSwitchCase="'success'">Success: Connected to Database 'cpa'.</pre>
+                <pre *ngSwitchCase="'error'">Error: Loss Connection to Database 'cpa'.</pre>
+            </div>
+            <div *ngIf="checkItems['cpaConnection'] == 'success'">
+                <pre>{{ checkItems['cpaData'] | json }}</pre>
+            </div>
+        </div>
+    </mat-expansion-panel>
+</mat-accordion>

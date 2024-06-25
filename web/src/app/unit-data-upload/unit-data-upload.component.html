@@ -1,0 +1,54 @@
+<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+    <mat-tab label="Upload Instance">
+        <div class="box">
+            <label class="label-up" [attr.for]='"xFile"+data_type' *ngIf="!onlyDir">
+                Select File<span *ngIf="allowMultiple">s</span>
+                </label>
+            <label class="label-up" [attr.for]='"xFolder"+data_type' *ngIf="data_type != 'CPA' && data_type != 'Experiment'">
+                Select Folder
+            </label>
+
+            <label class="label-up-cpa" [attr.for]='"xFolder"+data_type' *ngIf="data_type ==='CPA' || data_type === 'Experiment'">
+                Select Folder<br><br><span style="font-size: small;">Please pay attention to the dir structure!</span>
+            </label>
+
+            <input type="file" [id]='"xFile"+data_type' class="hidden-upload" (change)="onFileSelected($event)"
+                [multiple]="allowMultiple" #fileInput1>
+            <input type="file" [id]='"xFolder"+data_type' class="hidden-upload" (change)="onFileSelected($event)"
+                webkitdirectory #fileInput2>
+            
+            <mat-divider></mat-divider>
+            <h2>UPLOADED FILES:
+                <button mat-button color="primary" (click)="feedToDB()"><u>feed all in
+                        database</u></button>
+                <button mat-button color="warn" class="delete-all" (click)="deleteAll()">
+                    <u>delete all</u></button>
+            </h2>
+            <div *ngIf="uploadedFiles.length > 0" class="tab-box">
+                <mat-selection-list (selectionChange)="onSelected($event)">
+                    <mat-list-option *ngFor="let file of uploadedFiles" [value]="file.file_name"
+                        [selected]="selectedOrNot(file)" [disabled]="disabledOrNot(file)">
+                        <div>{{ file.file_name }}</div>
+                        <div class="option-box">
+                            <div [ngClass]="file.result.replace(' ', '-') + 'file'">upload: {{ file.result }}
+                            </div>
+                            <div [ngClass]="selectedFiles[file.file_name] + 'file'">save: {{
+                                selectedFiles[file.file_name] }}</div>
+                        </div>
+                    </mat-list-option>
+                </mat-selection-list>
+            </div>
+            <div *ngIf="uploadedFiles.length == 0">
+                <ul>
+                    --none--
+                </ul>
+            </div>
+        </div>
+    </mat-tab>
+
+    <mat-tab label="Create Instance">
+        <div class="box">
+            <app-unit-create-instance [data_type]="data_type" [defaultData]="defaultData"></app-unit-create-instance>
+        </div>
+    </mat-tab>
+</mat-tab-group>

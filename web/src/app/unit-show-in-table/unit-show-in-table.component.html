@@ -1,0 +1,17 @@
+<div class="box">
+    <div class="shell">
+        <table>
+        <thead>
+            <tr>
+                <th *ngFor="let header of headers">{{ header }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let row of dataRows">
+                <td *ngFor="let cell of row">{{ cell }}</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    
+</div>

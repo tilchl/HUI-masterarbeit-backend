@@ -1,0 +1,86 @@
+<div class="main" *ngIf="showTable">
+    <mat-form-field>
+        <mat-label>Select</mat-label>
+        <mat-select [(ngModel)]="formControl">
+            <mat-option value="{{item}}" *ngFor="let item of selectMenu">{{ hash[item] }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button class="toggle" (click)="exportToExcel()" [disabled]="exporting"><span style="color: #1976d2;">Export to
+            excel</span></button>
+
+    <button mat-stroked-button [matMenuTriggerFor]="menu" class="toggle">see F factors</button>
+    <mat-menu #menu="matMenu">
+        <mat-list-item *ngFor="let versuch_id of getObjectKeys(cache)">{{ versuch_id }}: <span style="color: #1976d2; font-weight: bold">{{ cache[versuch_id] }}</span></mat-list-item>
+    </mat-menu>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="exporting" style="transform: translateY(-11px);"></mat-progress-bar>
+    <mat-divider style="transform: translateY(-11px);"></mat-divider>
+    <table *ngIf="formControl=== 'raw'">
+        <colgroup>
+            <col class="dobfett">
+            <col class="colfett">
+            <col>
+            <col>
+            <col>
+            <col class="colfett">
+            <col class="colfett">
+            <col>
+            <col>
+            <col>
+            <col class="colfett">
+            <col>
+            <col>
+            <col>
+            <col class="colfett">
+            <col>
+            <col>
+            <col>
+            <col class="colfett">
+        </colgroup>
+        <tr>
+            <td class="rowfix"></td>
+            <td class="rowfix"></td>
+            <td colspan="4" class="rowfix">pre data</td>
+            <td class="rowfix"></td>
+            <td colspan="4" class="rowfix">post data</td>
+            <td colspan="4" class="rowfix">post / pre</td>
+            <td colspan="4" class="rowfix">norm. post / pre</td>
+        </tr>
+        <tr *ngFor="let row of sortedExcelData; let i = index" [class.highlight-row]="row['postid']==='' && row['preid'] != '' && row['viabilitypost'] != ''">
+            <td *ngIf="i === 0" [class.rowfix]="i === 0"></td>
+            <td [class.rowfix]="i === 0" *ngIf="getFirstCol().indexOf(i+2)!=-1" [ngStyle]="{'background-color': classColors[row['vid']] }"
+                [attr.rowspan]="this.vertikal_merge[this.getFirstCol().indexOf(i+2)][1] - this.vertikal_merge[this.getFirstCol().indexOf(i+2)][0] + 1">
+                {{ row['vid'] }}</td>
+            <td [class.rowfix]="i === 0" *ngFor="let key of getObjectKeys(row) | excludeItem:['vid'];let ii = index"
+                [class.maxHighlight]="highlightCell(i, key)" title="{{ hash[getObjectKeys(row)[ii+1]] }}">{{ row[key] }}</td>
+        </tr>
+    </table>
+
+    <div *ngIf="formControl != 'raw' && sortedResultData != {}" class="analyse-field">
+        <table>
+            <div>
+                <div *ngFor="let faktor of getObjectKeys(sortedResultData)" class="colum">
+                    <tr>
+                        <td class="longCell">{{ faktor }}</td>
+                    </tr>
+                </div>
+            </div>
+
+            <div>
+                <div *ngFor="let faktor of getObjectKeys(sortedResultData)" class="colum">
+                    <tr *ngFor="let cell of sortedResultData[faktor][formControl]">
+                        <td [ngStyle]="{'background-color': classColors[cell[1]] }" class="longCell" *ngIf="cell[0] != ''">{{ cell[0] }}</td>
+                    </tr>
+                </div>
+            </div>
+        </table>
+        <div>
+            <app-unit-analyse-exp-graph [sortedResultData]="sortedResultData" [which]="formControl"
+                [classColors]="classColors"></app-unit-analyse-exp-graph>
+        </div>
+
+    </div>
+</div>
+<div #chartContainer style="width: 0px; height: 0px;"></div>
+<!-- <button (click)="exportChartAsImage('viabilityppn')"></button> -->

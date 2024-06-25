@@ -1,0 +1,97 @@
+h2 {
+    width: 100%;
+    text-align: center;
+    padding:20px 0px 0px;
+}
+
+.focus {
+    font-weight: bold;
+    color: #1976d2;
+   display: inline-block;
+}
+
+.action, .focus {
+    text-align: center;
+}
+
+.action:hover,
+.focus:hover {
+    cursor: pointer;
+}
+
+.list-box {
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.mdc-list {
+    padding: 0px
+}
+
+
+.example-container {
+    min-width: 100%;
+    border-left: 1px solid rgba(0,0,0,.12);
+    border-right: 1px solid rgba(0,0,0,.12);
+    display: block;
+    position: relative;
+}
+
+.example-sidenav-content {
+    min-width: 100%;
+    overflow: auto;
+    /* display: flex;
+    justify-content: space-between; */
+}
+
+.example-sidenav {
+    min-width: 200px;
+    display: flex;
+    text-align: left;
+}
+
+.toggle {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    min-width: 0px;
+    padding: 0px;
+    min-height: none;
+    z-index: 99;
+}
+
+.toggle-right {
+    position: absolute;
+    left: 48px;
+    top: 0px;
+    min-width: 0px;
+    padding: 0px;
+    min-height: none;
+    z-index: 99;
+}
+
+.mirror-icon {
+    transform: scaleX(-1);
+}
+
+.example-margin {
+    margin: 0;
+    transform: translateX(0px);
+}
+
+.mdc-list-item{
+    overflow: visible;
+    display: inline-block;
+    min-height: 36px;
+    border: none;
+    margin: 0 6px 0;
+    line-height: 36px;
+}
+
+.list-item {
+    height: 36px;
+    line-height: 36px;
+}

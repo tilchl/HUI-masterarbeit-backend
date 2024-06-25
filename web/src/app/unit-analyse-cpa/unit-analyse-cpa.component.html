@@ -1,0 +1,42 @@
+<div class="main">
+    <!-- <mat-tab-group fitInkBarToContent class="group">
+        <mat-tab label="{{ callBack['cpa']['CPA_ID'] }}" *ngFor="let callBack of callBacks"> -->
+            <mat-card class="example-card" *ngFor="let callBack of callBacks">
+                <button class="edit-button" (click)="openDialogGraph(callBack)">
+                    <mat-icon>settings_brightness</mat-icon>
+                </button>
+                <mat-card-header>
+                    <mat-card-title>{{ callBack['cpa']['CPA_ID'] }}</mat-card-title>
+                    <mat-card-subtitle>{{ openSearch['which'] }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="content-box" *ngIf="callBack['child'][0]['unique_id']">
+                    <mat-accordion *ngFor="let sub of callBack['child']">
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <span class="key">{{ sub['class'] }} </span>
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <span>{{ sub['unique_id'] }}</span>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <div class="inhalt">
+                                <p
+                                    *ngFor="let key of getObjectKeys(sub['properties']) | excludeItem: [emm(sub['class'])]">
+                                    <span class="key">{{key}}: </span>
+                                    <button (click)="showGraph(callBack['cpa']['CPA_ID'], sub['class'])" *ngIf="key === 'Curve' && showGraphController.indexOf(callBack['cpa']['CPA_ID']+sub['class']) === -1">show in graph</button>
+                                    <button (click)="showGraph(callBack['cpa']['CPA_ID'], sub['class'])" *ngIf="key === 'Curve' && showGraphController.indexOf(callBack['cpa']['CPA_ID']+sub['class']) != -1">close graph</button>
+                                    <span *ngIf="key != 'Curve'"> {{ sub['properties'][key] }}</span>
+                                    <span *ngIf="key === 'Curve' && showGraphController.indexOf(callBack['cpa']['CPA_ID']+sub['class']) === -1"> {{ compressObjectValues(sub['properties'][key]) | json }}</span>
+                                    <app-unit-cpa-sub [cpa_id]="callBack['cpa']['CPA_ID']" [sub]="sub" *ngIf="key === 'Curve' && showGraphController.indexOf(callBack['cpa']['CPA_ID']+sub['class']) != -1"></app-unit-cpa-sub>
+                                    
+                                </p>
+                            </div>
+
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </mat-card-content>
+            </mat-card>
+        <!-- </mat-tab>
+    </mat-tab-group> -->
+</div>

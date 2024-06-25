@@ -1,0 +1,23 @@
+<div class="content" role="main">
+    <div class="check-box">
+        <app-unit-database-check></app-unit-database-check>
+    </div>
+    <div style="height: 20px;"></div>
+    <mat-divider></mat-divider>
+    <div class="main">
+        <div class="top">
+            <div *ngFor="let key of getObjectKeys(listItems)" class="top-content">
+                <h2>{{ key | uppercase }}:</h2>
+                <mat-button-toggle-group>
+                    <mat-button-toggle *ngFor="let value of listItems[key]" (click)="setWhich(value)">
+                        <span *ngIf="value == which[0]" class="focus">{{ value | uppercase }}</span>
+                        <span *ngIf="value != which[0]">{{ value }}</span>
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+            <mat-divider></mat-divider>
+        </div>
+
+        <app-unit-analyse-select-menu [which]="which"></app-unit-analyse-select-menu>
+    </div>
+</div>

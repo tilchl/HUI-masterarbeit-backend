@@ -1,0 +1,37 @@
+<mat-drawer-container class="example-container" autosize>
+    <mat-drawer #drawer class="example-sidenav" mode="side" opened>
+        <!-- <h2 class="title" *ngIf="which[0]">- {{ which }} -</h2>
+        <mat-divider></mat-divider> -->
+        <mat-checkbox #checkbox class="example-margin" (change)="selectAll($event)" [disabled]="which[0] != 'PreData' && which[0] != 'PostData' "><u>select all</u></mat-checkbox>
+        <mat-divider></mat-divider>
+        <mat-list cdkListbox class="list-box">
+            <button class="list-item" mat-menu-item *ngFor="let value of idList" title="{{value}}" (click)="setSelect(value)">
+                <div *ngIf="isSelected(value)" class="focus">{{ value }}</div>
+                <div *ngIf="!isSelected(value)" class="action">{{ value }}</div>
+            </button>
+        </mat-list>
+        <mat-divider></mat-divider>
+    </mat-drawer>
+
+    <div class="example-sidenav-content" *ngIf="selectedId != []">
+        <app-unit-analyse-cell *ngIf="which[0] == 'PreData'" [staticOrNot]="group.value === 'static'" [openSearch]="{which:which[0], selectedId:selectedId}"
+            (deleteOne)="OnDeleteOne($event)"></app-unit-analyse-cell>
+        <app-unit-analyse-cell *ngIf="which[0] == 'PostData'" [staticOrNot]="group.value === 'static'" [openSearch]="{which:which[0], selectedId:selectedId}"
+            (deleteOne)="OnDeleteOne($event)"></app-unit-analyse-cell>
+        <app-unit-analyse-process *ngIf="which[0] == 'Process'" [staticOrNot]="group.value === 'static'" [openSearch]="{which:which[0], selectedId:selectedId}"
+            (deleteOne)="OnDeleteOne($event)"></app-unit-analyse-process>
+        <app-unit-analyse-experiment *ngIf="which[0] == 'Experiment'" [staticOrNot]="group.value === 'static'"
+            [openSearch]="{which:which[0], selectedId:selectedId}"
+            (deleteOne)="OnDeleteOne($event)"></app-unit-analyse-experiment>
+        <app-unit-analyse-cpa *ngIf="which[0] == 'CPA'" [staticOrNot]="group.value === 'static'" [openSearch]="{which:which[0], selectedId:selectedId}"
+            (deleteOne)="OnDeleteOne($event)"></app-unit-analyse-cpa>
+
+        <mat-button-toggle (click)="drawer.toggle()" class="toggle"><mat-icon [class.mirror-icon]="!drawer.opened">toll</mat-icon></mat-button-toggle>
+        <mat-button-toggle-group class="toggle-right" #group="matButtonToggleGroup">
+            <mat-button-toggle value="card" checked>Card</mat-button-toggle>
+            <mat-button-toggle value="static">Static</mat-button-toggle>
+        </mat-button-toggle-group>
+          
+    </div>
+
+</mat-drawer-container>

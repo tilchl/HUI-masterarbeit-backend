@@ -1,0 +1,4 @@
+<div class="main">
+    <highcharts-chart [Highcharts]="Highcharts" [options]="chartOptions" *ngIf="showOrNot"></highcharts-chart>
+    <highcharts-chart *ngIf="sub.class === 'DSC' && showSub" [Highcharts]="Highcharts" [options]="chartOptionsSub"></highcharts-chart>
+</div>

@@ -1,0 +1,52 @@
+<div class="main">
+    <!-- <mat-tab-group fitInkBarToContent class="group">
+        <mat-tab label="{{callBacks['experiment']['Experiment_ID']}}" *ngFor="let callBack of callBackss"> -->
+
+    <mat-card class="example-card" *ngIf="!staticOrNot && callBacks[0]">
+        <button class="edit-button" (click)="openDialogGraph(callBacks[0])">
+            <mat-icon>settings_brightness</mat-icon>
+        </button>
+
+        <mat-card-header>
+            <mat-card-title>{{ callBacks[0]['experiment']['Experiment_ID'] }}</mat-card-title>
+            <mat-card-subtitle>{{ openSearch['which'] }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="content-box" *ngIf="callBacks[0]['child'][0]['probes'].length">
+            <div *ngFor="let versuch of callBacks[0]['child']; let i = index" style="margin-bottom: 10px;">
+                <p><span class="key">versuch {{i+1}}: </span>{{ versuch['versuch']['Versuch_ID'] }}</p>
+                <p><span class="key">factor F: </span>{{ versuch['versuch']['F_factor'] }}</p>
+                <mat-accordion *ngFor="let probe of versuch['probes']; let i = index">
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <span class="key">factor {{i+1}}</span>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                {{probe['Sample_ID']}}
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <mat-divider></mat-divider>
+                        <div style="height: 10px;"></div>
+                        <div *ngFor="let key of getObjectKeys(probe) | excludeItem: ['Unique_ID', 'Sample_ID']">
+                            <span class="key">{{key}}: </span>
+                            <mat-chip-listbox *ngIf="parseArray(probe[key])">
+                                <mat-chip *ngFor="let item of probe[key]">{{ item }}</mat-chip>
+                            </mat-chip-listbox>
+                            <mat-chip-listbox *ngIf="!parseArray(probe[key])">
+                                <mat-chip >{{ probe[key] }}</mat-chip>
+                            </mat-chip-listbox>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- <app-unit-highcharts-graph [experiment]="callBacks[0]"></app-unit-highcharts-graph> -->
+    <div *ngIf="staticOrNot && callBacks[0]" class="analyse-statistic">
+        <app-unit-edit-excel [experiment]="callBacks[0]"></app-unit-edit-excel>
+    </div>
+
+    <!-- </mat-tab>
+    </mat-tab-group> -->
+</div>

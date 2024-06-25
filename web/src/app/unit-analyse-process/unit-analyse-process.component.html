@@ -1,0 +1,39 @@
+<div class="main">
+    <!-- <mat-tab-group fitInkBarToContent class="group">
+        <mat-tab label="{{ callBack['Process_ID'] }}" *ngFor="let callBack of callBacks"> -->
+            <mat-card class="example-card" *ngFor="let callBack of callBacks">
+                <button class="edit-button" (click)="openDialogGraph(callBack)">
+                    <mat-icon>settings_brightness</mat-icon>
+                </button>
+                
+                <mat-card-header>
+                    <mat-card-title>{{ callBack['Process_ID'] }}</mat-card-title>
+                    <mat-card-subtitle>{{ openSearch['which'] }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="content-box">
+                    <div *ngFor="let topItem of topItems">
+                        <p><span class="key">{{ topItem }}:</span> {{ callBack[topItem] }}</p>
+                    </div>
+                    <div>
+                        <mat-card-subtitle>Others: </mat-card-subtitle>
+                        <p *ngFor="let item of seeMore; let i = index">
+                            <select [(ngModel)]="seeMore[i]" class="key">
+                                <option value="{{key}}" *ngFor="let key of getObjectKeys(callBack).sort()">{{key}}</option>
+                            </select>
+                            : {{ callBack[seeMore[i]]}}
+                        </p>
+                        <p>
+                            <u class="see-more" (click)="seeMoreAttr()">+ see more</u>
+                        </p>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        <!-- </mat-tab>
+    </mat-tab-group> -->
+    <div style="height: 10px;"></div>
+    <mat-divider></mat-divider>
+    <div style="height: 10px;"></div>
+    <!-- <div class="analyse" *ngIf="showAnalyse">
+        <div style="width: 100%;height: 100%; color: white;">{{toShow|json}}</div>
+    </div> -->
+</div>

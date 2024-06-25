@@ -1,0 +1,58 @@
+<div class="main">
+    <mat-tab-group fitInkBarToContent [selectedIndex]="selected" class="group" mat-stretch-tabs="false" mat-align-tabs="end" *ngIf="!staticOrNot">
+        <mat-tab label="{{ callBack['Sample_ID'] }}" *ngFor="let callBack of callBacks">
+            <mat-card class="example-card">
+                <button class="edit-button" (click)="openDialogGraph(callBack)">
+                    <mat-icon>settings_brightness</mat-icon>
+                </button>
+                <mat-card-header>
+                    <mat-card-title>{{ callBack['Sample_ID'] }}</mat-card-title>
+                    <mat-card-subtitle>{{ openSearch['which'] }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="content-box">
+                    <div *ngFor="let topItem of topItems">
+                        <p><span class="key">{{ topItem }}:</span> {{ callBack[topItem] }}</p>
+                    </div>
+                    <div *ngFor="let key of getObjectKeys(itemShow)">
+                        <mat-card-subtitle>{{ key }}: </mat-card-subtitle>
+                        <p *ngFor="let item of itemShow[key]">
+                            <span class="key">{{ item }}:</span>
+                            {{ callBack[item]}}
+                        </p>
+                    </div>
+                    <div>
+                        <mat-card-subtitle>Others: </mat-card-subtitle>
+                        <p *ngFor="let item of seeMore; let i = index">
+                            <select [(ngModel)]="seeMore[i]" class="key">
+                                <option value="{{key}}" *ngFor="let key of getObjectKeys(callBack).sort()">{{key}}</option>
+                            </select>
+                            : {{ callBack[seeMore[i]]}}
+                        </p>
+                        <p>
+                            <u class="see-more" (click)="seeMoreAttr()">+ see more</u>
+                        </p>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </mat-tab>
+    </mat-tab-group>
+
+    <div class="analyse" *ngIf="showTable && staticOrNot">
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 demo-table" matSort
+            (matSortChange)="sortData($event)">
+            <ng-container matColumnDef="{{item}}" *ngFor="let item of tableHeader">
+                <th mat-header-cell mat-sort-header *matHeaderCellDef>{{item}}</th>
+                <td mat-cell *matCellDef="let element">
+                    <div *ngIf="element[item]">
+                        <span *ngIf="isString(element[item])">{{element[item]}}</span>
+                        <span *ngIf="!isString(element[item])">{{element[item]['mean']}} (SE:
+                            {{element[item]['SE']}})</span>
+                    </div>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="tableHeader"></tr>
+            <tr mat-row (click)="clickedRow(row)" *matRowDef="let row; columns: tableHeader"></tr>
+        </table>
+    </div>
+</div>

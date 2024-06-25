@@ -1,0 +1,31 @@
+tr{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    flex-direction: row;
+}
+
+th, td {
+    text-align: center;
+    border: solid;
+    border-color: black;
+    border-width: 1px;
+    flex-grow: 1;
+    font-weight: normal;
+}
+
+table {
+    color: black;
+    font-weight: bold;
+    width: 100%;
+}
+
+.box {
+    overflow: hidden;
+}
+
+.shell{
+    overflow-y: scroll;
+    max-height: 300px;
+    width: calc(100% + 0px);
+}

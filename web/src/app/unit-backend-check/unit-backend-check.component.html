@@ -1,0 +1,71 @@
+
+
+<mat-accordion>
+    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header>
+            <div [ngSwitch]="connectionStatus" class="status-bar">
+                <div title="Server Status" [ngClass]="connectionStatus" class="sign-in-main"><mat-spinner mode="indeterminate" [diameter]="13" class="spinner" *ngIf="connectionStatus == 'pending'"></mat-spinner></div>
+                <pre *ngSwitchDefault class="basic">Checking Server...</pre>
+                <pre *ngSwitchCase="'success'" class="connected">Server status: healthy</pre>
+                <pre *ngSwitchCase="'error'" class="disconnected">Server status: abnormal</pre>
+            </div>
+        </mat-expansion-panel-header>
+        <!-- Terminal -->
+<div class="terminal">
+    <div>
+        <pre>Connection Check:</pre>
+    </div>
+    <div [ngSwitch]="checkItems['backendConnection']">
+        <div title="Server Status" [ngClass]="checkItems['backendConnection']"><mat-spinner mode="indeterminate" [diameter]="13" class="spinner" *ngIf="checkItems['backendConnection'] == 'pending'"></mat-spinner></div>
+        <pre *ngSwitchDefault>Trying: Connect to Backend...</pre>
+        <pre *ngSwitchCase="'success'">Success: Connected to Backend.</pre>
+        <pre *ngSwitchCase="'error'">Error: Loss Connection to Backend.</pre>
+    </div>
+    <div [ngSwitch]="checkItems['dataStoreExistence']">
+        <div title="Server Status" [ngClass]="checkItems['dataStoreExistence']"><mat-spinner mode="indeterminate" [diameter]="13" class="spinner" *ngIf="checkItems['dataStoreExistence'] == 'pending'"></mat-spinner></div>
+        <pre *ngSwitchDefault>Trying: Check Existence of Data Store <span class="data-store-name">{{dataStoreName}}</span>...</pre>
+        <pre *ngSwitchCase="'success'">Success: Created Data Store <span class="data-store-name">{{dataStoreName}}</span>.</pre>
+        <pre *ngSwitchCase="'exists'">Success: Created Data Store <span class="data-store-name">{{dataStoreName}}</span>.</pre>
+        <pre *ngSwitchCase="'error'">Error: Loss Connection to Data Store <span class="data-store-name">{{dataStoreName}}</span>.</pre>
+    </div>
+    <div>
+        <pre>Data Store Integrity Check:</pre>
+    </div>
+    <div [ngSwitch]="checkItems['dataStoreIntegrityCpa']">
+        <div title="Server Status" [ngClass]="checkItems['dataStoreIntegrityCpa']"><mat-spinner mode="indeterminate" [diameter]="13" class="spinner" *ngIf="checkItems['dataStoreIntegrityCpa'] == 'pending'"></mat-spinner></div>
+        <pre *ngSwitchDefault>Trying: Check Existence of Subfolder <span class="data-store-name">/CPA</span>...</pre>
+        <pre *ngSwitchCase="'success'">Success: Created Subfolder <span class="data-store-name">/CPA</span>.</pre>
+        <pre *ngSwitchCase="'exists'">Success: Subfolder <span class="data-store-name">/CPA</span> Exists.</pre>
+        <pre *ngSwitchCase="'error'">Error: Loss connection to Subfolder <span class="data-store-name">/CPA</span>.</pre>
+    </div>
+    <div [ngSwitch]="checkItems['dataStoreIntegrityExp']">
+        <div title="Server Status" [ngClass]="checkItems['dataStoreIntegrityExp']"><mat-spinner mode="indeterminate" [diameter]="13" class="spinner" *ngIf="checkItems['dataStoreIntegrityExp'] == 'pending'"></mat-spinner></div>
+        <pre *ngSwitchDefault>Trying: Check Existence of Subfolder <span class="data-store-name">/Experiment</span>...</pre>
+        <pre *ngSwitchCase="'success'">Success: Created Subfolder <span class="data-store-name">/Experiment</span>.</pre>
+        <pre *ngSwitchCase="'exists'">Success: Subfolder <span class="data-store-name">/Experiment</span> Exists.</pre>
+        <pre *ngSwitchCase="'error'">Error: Loss connection to Subfolder <span class="data-store-name">/Experiment</span>.</pre>
+    </div>
+    <div [ngSwitch]="checkItems['dataStoreIntegrityPredata']">
+        <div title="Server Status" [ngClass]="checkItems['dataStoreIntegrityPredata']"><mat-spinner mode="indeterminate" [diameter]="13" class="spinner" *ngIf="checkItems['dataStoreIntegrityPredata'] == 'pending'"></mat-spinner></div>
+        <pre *ngSwitchDefault>Trying: Check Existence of Subfolder <span class="data-store-name">/PreData</span>...</pre>
+        <pre *ngSwitchCase="'success'">Success: Created Subfolder <span class="data-store-name">/PreData</span>.</pre>
+        <pre *ngSwitchCase="'exists'">Success: Subfolder <span class="data-store-name">/PreData</span> Exists.</pre>
+        <pre *ngSwitchCase="'error'">Error: Loss connection to Subfolder <span class="data-store-name">/PreData</span>.</pre>
+    </div>
+    <div [ngSwitch]="checkItems['dataStoreIntegrityPostdata']">
+        <div title="Server Status" [ngClass]="checkItems['dataStoreIntegrityPostdata']"><mat-spinner mode="indeterminate" [diameter]="13" class="spinner" *ngIf="checkItems['dataStoreIntegrityPostdata'] == 'pending'"></mat-spinner></div>
+        <pre *ngSwitchDefault>Trying: Check Existence of Subfolder <span class="data-store-name">/PostData</span>...</pre>
+        <pre *ngSwitchCase="'success'">Success: Created Subfolder <span class="data-store-name">/PostData</span>.</pre>
+        <pre *ngSwitchCase="'exists'">Success: Subfolder <span class="data-store-name">/PostData</span> Exists.</pre>
+        <pre *ngSwitchCase="'error'">Error: Loss connection to Subfolder <span class="data-store-name">/PostData</span>.</pre>
+    </div>
+    <div [ngSwitch]="checkItems['dataStoreIntegrityProcess']">
+        <div title="Server Status" [ngClass]="checkItems['dataStoreIntegrityProcess']"><mat-spinner mode="indeterminate" [diameter]="13" class="spinner" *ngIf="checkItems['dataStoreIntegrityProcess'] == 'pending'"></mat-spinner></div>
+        <pre *ngSwitchDefault>Trying: Check Existence of Subfolder <span class="data-store-name">/Process</span>...</pre>
+        <pre *ngSwitchCase="'success'">Success: Created Subfolder <span class="data-store-name">/Process</span>.</pre>
+        <pre *ngSwitchCase="'exists'">Success: Subfolder <span class="data-store-name">/Process</span> Exists.</pre>
+        <pre *ngSwitchCase="'error'">Error: Loss connection to Subfolder <span class="data-store-name">/Process</span>.</pre>
+    </div>
+</div>
+    </mat-expansion-panel>
+</mat-accordion>

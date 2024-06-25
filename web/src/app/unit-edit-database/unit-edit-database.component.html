@@ -1,0 +1,853 @@
+<mat-stepper orientation="vertical" (selectionChange)="generateCommit()">
+    <mat-step>
+        <ng-template matStepLabel>Editer</ng-template>
+        <ng-template matStepContent>
+            <mat-card class="example-card" *ngIf="type==='Experiment'">
+                <mat-card-header>
+                    <mat-card-title>
+                        <input type="search" [(ngModel)]="currentFileName" placeholder="Ex. test_1 2023"
+                            (blur)="checkFileName(type)" class="card-title">
+                        <button mat-button class="rename"
+                            (click)="delete('fatherNodes', {nodeClass: type, Unique_ID: callBack['experiment']['Experiment_ID']})">
+                            <mat-icon>delete_outline</mat-icon>
+                        </button>
+                        <mat-error *ngIf="error['cpaIndex'] == 'type1' || error['fileName'] == 'type1'">
+                            '/', '\' shall not beused.</mat-error>
+                        <mat-error *ngIf="error['fileName'] == 'type2'">Experiment ID is required.</mat-error>
+                        <mat-error *ngIf="error['fileName'] == 'type3' && currentFileName != ''">
+                            Experiment ID is used.</mat-error>
+                    </mat-card-title>
+                    <mat-card-subtitle>{{ type }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="content-box">
+                    <div *ngIf="callBack['child'][0]['probes'].length">
+                        <div *ngFor="let versuch of callBack['child']; let i = index" style="margin-bottom: 10px;">
+                            <p class="versuch-line"><span class="key">versuch {{i+1}}: </span>
+                                <textarea type="search" [(ngModel)]="currentSubName[versuch['versuch']['Unique_ID']]"
+                                    rows="1" placeholder="Ex. test_1 2023"
+                                    (blur)="checkTheVersuch('Versuch', versuch['versuch']['Unique_ID'], currentSubName[versuch['versuch']['Unique_ID']])"></textarea>
+                                <button mat-button class="rename"
+                                    (click)="delete('fatherNodes', {nodeClass: 'Versuch', Unique_ID: versuch['versuch']['Unique_ID']})">
+                                    <mat-icon>delete_outline</mat-icon>
+                                </button>
+                                <mat-error *ngIf="statusSubName[versuch['versuch']['Unique_ID']] == 'type2'">Versuch ID
+                                    is
+                                    required.</mat-error>
+                                <mat-error *ngIf="statusSubName[versuch['versuch']['Unique_ID']] == 'type3'">Versuch ID
+                                    is
+                                    used in this experiment.</mat-error>
+                            </p>
+                            <p class="versuch-line"><span class="key">factor F: </span>
+                                <textarea type="search" [(ngModel)]="currentFfactor[versuch['versuch']['Unique_ID']]" rows="1"
+                                    (blur)="checkFfactor(versuch['versuch']['Unique_ID'], versuch['versuch']['F_factor'], currentFfactor[versuch['versuch']['Unique_ID']])"></textarea>
+                                <mat-error *ngIf="statusFfactor[versuch['versuch']['Unique_ID']] == 'type2'">Factor F
+                                    is
+                                    required.</mat-error>
+                                <mat-error *ngIf="statusFfactor[versuch['versuch']['Unique_ID']] == 'type3'">Factor F
+                                    shall be number.</mat-error>
+                            </p>
+                            <mat-accordion *ngFor="let probe of versuch['probes']; let ii = index">
+                                <mat-expansion-panel #pandel>
+                                    <!-- <mat-expansion-panel [expanded]="true" disabled> -->
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            <span class="key">probe {{ii+1}}</span>
+                                        </mat-panel-title>
+                                        <mat-panel-description>
+                                            <textarea type="search" [(ngModel)]="currentSubName[probe['Unique_ID']]"
+                                                rows="1" placeholder="Ex. test_1 2023"
+                                                (blur)="checkTheVersuch('Probe', probe['Unique_ID'], currentSubName[probe['Unique_ID']])"
+                                                (keydown.space)="pandel.toggle()" (click)="pandel.toggle()"></textarea>
+                                            <button mat-button class="rename"
+                                                (click)="delete('fatherNodes', {nodeClass: 'Probe', Unique_ID: probe['Unique_ID']})"
+                                                (click)="pandel.toggle()">
+                                                <mat-icon>delete_outline</mat-icon>
+                                            </button>
+                                            <mat-error *ngIf="statusSubName[probe['Unique_ID']] == 'type2'">Probe ID
+                                                is required.</mat-error>
+                                            <mat-error *ngIf="statusSubName[probe['Unique_ID']] == 'type3'">Probe ID
+                                                is used in this Versuch.</mat-error>
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+                                    <mat-divider></mat-divider>
+                                    <div style="height: 10px;"></div>
+                                    <div
+                                        *ngFor="let key of getObjectKeys(probe) | excludeItem: ['Unique_ID', 'Sample_ID']">
+                                        <span class="key">{{key}}: </span>
+                                        <div *ngIf="key == 'Process_ID' || key == 'CPA_ID'">
+                                            <input *ngIf="pppcDataControler[probe['Unique_ID']]" type="search"
+                                                class="pc-input"
+                                                [(ngModel)]="pppcDataControler[probe['Unique_ID']][key]"
+                                                [matAutocomplete]="auto" (click)="search(key)">
+                                            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                                                <mat-option *ngFor="let id of idList[key.replace('_', ' ')]"
+                                                    [value]="id">
+                                                    {{ id }}
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                        </div>
+                                        <div *ngIf="key == 'PreData_ID' || key == 'PostData_ID'"
+                                            style="position: relative;">
+                                            <div *ngFor="let item of probe[key]">
+                                                <p class="onecell">{{ item }}</p>
+                                            </div>
+                                            <div *ngIf="pppcDataControler[probe['Unique_ID']]">
+                                                <p class="tips" (click)="search(key)" (click)="select.toggle()"><button
+                                                        style="cursor: pointer;">+ add new / delete</button></p>
+                                                <mat-select #select
+                                                    [(ngModel)]="pppcDataControler[probe['Unique_ID']][key]" multiple
+                                                    class="select-menu">
+                                                    <mat-option *ngFor="let id of idList[key.replace('_', ' ')]"
+                                                        style="padding: 0px;" [value]="id">{{id}}</mat-option>
+                                                </mat-select>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </mat-expansion-panel>
+                            </mat-accordion>
+                            <mat-accordion
+                                *ngFor="let probe of addControlerProbe[versuch['versuch']['Unique_ID']]; let ii = index">
+                                <mat-expansion-panel #pandel>
+                                    <!-- <mat-expansion-panel [expanded]="true" disabled> -->
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            <span class="key">probe {{ ii + versuch['probes'].length + 1}}</span>
+                                        </mat-panel-title>
+                                        <mat-panel-description>
+                                            <textarea type="search" [(ngModel)]="probe['Sample ID']" rows="1"
+                                                placeholder="Ex. test_1 2023"
+                                                (blur)="checkTheVersuch('Probe', versuch['versuch']['Unique_ID'] + '*-*' + (ii), probe['Sample ID'])"
+                                                (click)="pandel.toggle()"></textarea>
+                                            <button mat-button class="rename"
+                                                (click)="deleteGenerierted(addControlerProbe[versuch['versuch']['Unique_ID']], ii)"
+                                                (click)="pandel.toggle()">
+                                                <mat-icon>delete_outline</mat-icon>
+                                            </button>
+                                            <mat-error
+                                                *ngIf="statusSubName[versuch['versuch']['Unique_ID'] + '*-*' + (ii)] == 'type2'">Probe
+                                                ID
+                                                is required.</mat-error>
+                                            <mat-error
+                                                *ngIf="statusSubName[versuch['versuch']['Unique_ID'] + '*-*' + (ii)] == 'type3'">Probe
+                                                ID
+                                                is used in this Versuch.</mat-error>
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+                                    <mat-divider></mat-divider>
+                                    <div style="height: 10px;"></div>
+                                    <div
+                                        *ngFor="let key of getObjectKeys(probe) | excludeItem: ['Unique ID', 'Sample ID']">
+                                        <span class="key">{{key}}: </span>
+                                        <div *ngIf="key == 'Process ID' || key == 'CPA ID'">
+                                            <input type="search" class="pc-input" [(ngModel)]="probe[key]"
+                                                [matAutocomplete]="auto" (click)="search(key.replace(' ', '_'))">
+                                            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                                                <mat-option *ngFor="let id of idList[key]" [value]="id">
+                                                    {{ id }}
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                        </div>
+                                        <div *ngIf="key == 'PreData ID' || key == 'PostData ID'"
+                                            style="position: relative;">
+                                            <div *ngFor="let item of probe[key]">
+                                                <p class="onecell">{{ item }}</p>
+                                            </div>
+                                            <p class="tips" (click)="search(key.replace(' ', '_'))"
+                                                (click)="select.toggle()"><button style="cursor: pointer;">+ add new /
+                                                    delete</button></p>
+                                            <mat-select #select [(ngModel)]="probe[key]" multiple class="select-menu"
+                                                style="width: 200px;">
+                                                <mat-option *ngFor="let id of idList[key]" style="padding: 0px;"
+                                                    [value]="id">{{id}}</mat-option>
+                                            </mat-select>
+                                        </div>
+                                    </div>
+                                </mat-expansion-panel>
+                            </mat-accordion>
+                            <button (click)="add(versuch['versuch']['Unique_ID'], 'Probe')">+ add new probe</button>
+                        </div>
+                    </div>
+                    <div *ngFor="let newVersuchIndex of getObjectKeys(addControler)" style="margin-bottom: 10px;">
+                        <p class="versuch-line"><span class="key">{{ newVersuchIndex }}: </span>
+                            <textarea type="search" [(ngModel)]="addControler[newVersuchIndex]['Versuche ID']" rows="1"
+                                placeholder="Ex. test_1 2023"
+                                (blur)="checkTheVersuch('Versuch', newVersuchIndex, addControler[newVersuchIndex]['Versuche ID'])"></textarea>
+                            <button mat-button class="rename"
+                                (click)="deleteGenerierted(addControler, newVersuchIndex)">
+                                <mat-icon>delete_outline</mat-icon>
+                            </button>
+                            <mat-error *ngIf="statusSubName[newVersuchIndex] == 'type2'">Verscuh ID is
+                                required.</mat-error>
+                            <mat-error *ngIf="statusSubName[newVersuchIndex] == 'type3'">Versuch ID is
+                                used in this experiment.</mat-error>
+                        </p>
+                        <p class="versuch-line"><span class="key">factor F: </span>
+                            <textarea type="search" [(ngModel)]="addControler[newVersuchIndex]['F_factor']" rows="1"></textarea>
+                            <mat-error *ngIf="!addControler[newVersuchIndex]['F_factor']">Factor F
+                                is
+                                required.</mat-error>
+                            <mat-error *ngIf="isNumber(addControler[newVersuchIndex]['F_factor']) && addControler[newVersuchIndex]['F_factor']">Factor F
+                                shall be number.</mat-error>
+                        </p>
+                        <mat-accordion
+                            *ngFor="let probeKey of getObjectKeys(addControler[newVersuchIndex]) | excludeItem: ['Versuche ID', 'F_factor']">
+                            <mat-expansion-panel #pandel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        <span class="key">{{ probeKey | lowercase }}</span>
+                                    </mat-panel-title>
+                                    <mat-panel-description>
+                                        <textarea type="search"
+                                            [(ngModel)]="addControler[newVersuchIndex][probeKey]['Sample ID']" rows="1"
+                                            placeholder="Ex. test_1 2023"
+                                            (blur)="checkTheVersuch('Probe', newVersuchIndex + '*-*' + probeKey, addControler[newVersuchIndex][probeKey]['Sample ID'])"
+                                            (click)="pandel.toggle()"></textarea>
+                                        <button mat-button class="rename"
+                                            (click)="deleteGenerierted(addControler[newVersuchIndex], probeKey)"
+                                            (click)="pandel.toggle()">
+                                            <mat-icon>delete_outline</mat-icon>
+                                        </button>
+                                        <mat-error
+                                            *ngIf="statusSubName[newVersuchIndex + '*-*' + probeKey] == 'type2'">Probe
+                                            ID
+                                            is required.</mat-error>
+                                        <mat-error
+                                            *ngIf="statusSubName[newVersuchIndex + '*-*' + probeKey] == 'type3'">Probe
+                                            ID
+                                            is used in this Versuch.</mat-error>
+                                    </mat-panel-description>
+                                </mat-expansion-panel-header>
+                                <mat-divider></mat-divider>
+                                <div style="height: 10px;"></div>
+                                <div
+                                    *ngFor="let key of getObjectKeys(addControler[newVersuchIndex][probeKey]) | excludeItem: ['Unique ID', 'Sample ID']">
+                                    <span class="key">{{key}}: </span>
+                                    <div *ngIf="key == 'Process ID' || key == 'CPA ID'">
+                                        <input type="search" class="pc-input"
+                                            [(ngModel)]="addControler[newVersuchIndex][probeKey][key]"
+                                            [matAutocomplete]="auto" (click)="search(key.replace(' ', '_'))">
+                                        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                                            <mat-option *ngFor="let id of idList[key]" [value]="id">
+                                                {{ id }}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </div>
+                                    <div *ngIf="key == 'PreData ID' || key == 'PostData ID'"
+                                        style="position: relative;">
+                                        <div *ngFor="let item of addControler[newVersuchIndex][probeKey][key]">
+                                            <p class="onecell">{{ item }}</p>
+                                        </div>
+                                        <p class="tips" (click)="search(key.replace(' ', '_'))"
+                                            (click)="select.toggle()"><button style="cursor: pointer;">+ add new /
+                                                delete</button></p>
+                                        <mat-select #select [(ngModel)]="addControler[newVersuchIndex][probeKey][key]"
+                                            multiple class="select-menu" style="width: 200px;">
+                                            <mat-option *ngFor="let id of idList[key]" style="padding: 0px;"
+                                                [value]="id">{{ id }}</mat-option>
+                                        </mat-select>
+                                    </div>
+                                </div>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                        <button (click)="add(newVersuchIndex, 'ProbeAtNew')">+ add new probe</button>
+                    </div>
+                    <button (click)="add('experiment', 'Versuche')" style="font-weight: bold;">+ add new
+                        versuch</button>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="example-card" *ngIf="type==='Process'">
+                <mat-card-header>
+                    <mat-card-title>
+                        <input type="search" [(ngModel)]="currentFileName" placeholder="Ex. test_1 2023"
+                            (blur)="checkFileName(type)" class="card-title">
+                        <button mat-button class="rename"
+                            (click)="delete('childrenNodes', {nodeClass: type, Unique_ID: callBack['Process_ID']})">
+                            <mat-icon>delete_outline</mat-icon>
+                        </button>
+                        <mat-error *ngIf="error['fileName'] == 'type1'">'/', '\' shall not be used.</mat-error>
+                        <mat-error *ngIf="error['fileName'] == 'type2'">{{ type }} ID is required.</mat-error>
+                        <mat-error *ngIf="error['fileName'] == 'type3'">{{ type }} ID is used.</mat-error>
+                    </mat-card-title>
+                    <mat-card-subtitle>{{ type }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="content-box">
+                    <div *ngFor="let topItem of getObjectKeys(pppcDataControler) | excludeItem : ['Process_ID']">
+                        <p class="card-line">
+                            <span class="key">{{ topItem }}:</span>
+                            <textarea matInput type="search" rows="1"
+                                [(ngModel)]="pppcDataControler[topItem]"></textarea>
+                            <button mat-button class="rename" *ngIf="getObjectKeys(callBack).indexOf(topItem) != -1"
+                                (click)="delete('nodeAttributes', {nodeClass: type, Unique_ID: callBack['Process_ID'], attributeKey: topItem})">
+                                <mat-icon>delete_outline</mat-icon>
+                            </button>
+                            <button mat-button class="rename" *ngIf="getObjectKeys(callBack).indexOf(topItem) == -1"
+                                (click)="deleteGenerierted(pppcDataControler, topItem)">
+                                <mat-icon>delete_outline</mat-icon>
+                            </button>
+                        </p>
+                    </div>
+                    <div>
+                        <u>+ new key and value: </u>
+                        <input type="search" [(ngModel)]="key" class="key"> : <input type="search" [(ngModel)]="value">
+                        <button (click)="addAttributes(pppcDataControler, key, value)">create</button>
+                    </div>
+                    <mat-error *ngIf="createAttrError == 'type2'">key / value required.</mat-error>
+                    <mat-error *ngIf="createAttrError == 'type3'">key is used.</mat-error>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="example-card" *ngIf="type==='PreData' || type==='PostData'">
+                <mat-card-header>
+                    <mat-card-title>
+                        <input type="search" [(ngModel)]="currentFileName" placeholder="Ex. test_1 2023"
+                            (blur)="checkFileName(type)" class="card-title">
+                        <button mat-button class="rename"
+                            (click)="delete('childrenNodes', {nodeClass: type, Unique_ID: callBack['Sample_ID']})">
+                            <mat-icon>delete_outline</mat-icon>
+                        </button>
+                        <mat-error *ngIf="error['fileName'] == 'type1'">'/', '\' shall not be used.</mat-error>
+                        <mat-error *ngIf="error['fileName'] == 'type2'">{{ type }} ID is required.</mat-error>
+                        <mat-error *ngIf="error['fileName'] == 'type3'">{{ type }} ID is used.</mat-error>
+                    </mat-card-title>
+                    <mat-card-subtitle>{{ type }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="content-box">
+                    <div *ngFor="let topItem of getObjectKeys(pppcDataControler) | excludeItem : ['Sample_ID']">
+                        <p class="card-line">
+                            <span class="key">{{ topItem }}:</span>
+                            <textarea matInput type="search" rows="1"
+                                [(ngModel)]="pppcDataControler[topItem]"></textarea>
+                            <button mat-button class="rename" *ngIf="getObjectKeys(callBack).indexOf(topItem) != -1"
+                                (click)="delete('nodeAttributes', {nodeClass: type, Unique_ID: callBack['Sample_ID'], attributeKey: topItem})">
+                                <mat-icon>delete_outline</mat-icon>
+                            </button>
+                            <button mat-button class="rename" *ngIf="getObjectKeys(callBack).indexOf(topItem) == -1"
+                                (click)="deleteGenerierted(pppcDataControler, topItem)">
+                                <mat-icon>delete_outline</mat-icon>
+                            </button>
+                        </p>
+                    </div>
+                    <div>
+                        <u>+ new key and value: </u>
+                        <input type="search" [(ngModel)]="key" class="key"> : <input type="search" [(ngModel)]="value">
+                        <button (click)="addAttributes(pppcDataControler, key, value)">create</button>
+                    </div>
+                    <mat-error *ngIf="createAttrError == 'type2'">key / value required.</mat-error>
+                    <mat-error *ngIf="createAttrError == 'type3'">key is used.</mat-error>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="example-card" *ngIf="type==='CPA'">
+                <mat-card-header>
+                    <mat-card-title>
+                        <input #inputType type="search" [(ngModel)]="currentCpaIndex" placeholder="Ex. CPA1"
+                            (blur)="checkCpaIndex()" [matAutocomplete]="autoType" (click)="search('CPA ID')"
+                            class="card-title">
+                        <mat-autocomplete autoActiveFirstOption #autoType="matAutocomplete">
+                            <mat-option *ngFor="let id of idList['CPA ID']" [value]="id" class="option">
+                                {{ id }}
+                            </mat-option>
+                        </mat-autocomplete>
+                        <button mat-button class="rename"
+                            (click)="delete('fatherNodes', {nodeClass: type, Unique_ID: callBack['cpa']['CPA_ID']})">
+                            <mat-icon>delete_outline</mat-icon>
+                        </button>
+                        <mat-error *ngIf="error['cpaIndex'] == 'type1' || error['fileName'] == 'type1'">'/', '\' shall
+                            not be
+                            used.</mat-error>
+                        <mat-error *ngIf="error['cpaIndex'] == 'type2'">CPA ID is required.</mat-error>
+                        <mat-error *ngIf="error['cpaIndex'] == 'type3' && currentCpaIndex != ''">CPA ID is
+                            used.</mat-error>
+                    </mat-card-title>
+                    <mat-card-subtitle>{{ type }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="content-box">
+                    <div *ngIf="callBack['child'][0]['unique_id']">
+                        <mat-accordion *ngFor="let sub of callBack['child']; let i = index;">
+                            <mat-expansion-panel #pandelCPA>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        <span class="key">{{ sub['class'] }} </span>
+                                    </mat-panel-title>
+                                    <mat-panel-description>
+
+                                        <textarea type="search"
+                                            [(ngModel)]="currentSubName[sub.class + '*-*' + sub.unique_id]" rows="1"
+                                            placeholder="Ex. test_1 2023" (keydown.space)="pandelCPA.toggle()"
+                                            (blur)="checkTheName(sub['class'], sub['unique_id'], currentSubName[sub.class + '*-*' + sub.unique_id])"
+                                            (click)="pandelCPA.toggle()"></textarea>
+                                        <button mat-button class="rename"
+                                            (click)="delete('childrenNodes', {nodeClass: sub['class'], Unique_ID: sub.unique_id})"
+                                            (click)="pandelCPA.toggle()">
+                                            <mat-icon>delete_outline</mat-icon>
+                                        </button>
+
+                                        <mat-error
+                                            *ngIf="statusSubName[sub.class + '*-*' + sub.unique_id] == 'type2'">{{
+                                            sub['class']
+                                            }} ID is required.</mat-error>
+                                        <mat-error
+                                            *ngIf="statusSubName[sub.class + '*-*' + sub.unique_id] == 'type3'">{{
+                                            sub['class']
+                                            }} ID is used.</mat-error>
+                                    </mat-panel-description>
+                                </mat-expansion-panel-header>
+                                <div *ngIf="pppcDataControler[sub['class']+'*-*'+sub['unique_id']]">
+                                    <p *ngFor="let key of getObjectKeys(pppcDataControler[sub['class']+'*-*'+sub['unique_id']]) | excludeItem: [emm(sub['class'])]"
+                                        class="card-line">
+                                        <span class="key">{{key}}: </span>
+                                        <textarea matInput type="search" rows="1"
+                                            [(ngModel)]="pppcDataControler[sub['class']+'*-*'+sub['unique_id']][key]"></textarea>
+
+                                        <button mat-button class="rename"
+                                            *ngIf="getObjectKeys(sub['properties']).indexOf(key) != -1"
+                                            (click)="delete('nodeAttributes', {nodeClass: sub['class'], Unique_ID: sub['unique_id'], attributeKey: key})">
+                                            <mat-icon>delete_outline</mat-icon>
+                                        </button>
+                                        <button mat-button class="rename"
+                                            *ngIf="getObjectKeys(sub['properties']).indexOf(key) == -1"
+                                            (click)="deleteGenerierted(pppcDataControler[sub['class']+'*-*'+sub['unique_id']], key)">
+                                            <mat-icon>delete_outline</mat-icon>
+                                        </button>
+                                    </p>
+                                </div>
+                                <div>
+                                    <u>+ new key and value: </u>
+                                    <input type="search" [(ngModel)]="key" class="key"> : <input type="search"
+                                        [(ngModel)]="value">
+                                    <button
+                                        (click)="addAttributes(pppcDataControler[sub['class']+'*-*'+sub['unique_id']], key, value)">create</button>
+                                </div>
+                                <mat-error *ngIf="createAttrError == 'type2'">key / value required.</mat-error>
+                                <mat-error *ngIf="createAttrError == 'type3'">key is used.</mat-error>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </div>
+                    <mat-accordion *ngFor="let item of getObjectKeys(addControler)">
+                        <mat-expansion-panel #pandelCPA>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <span class="key">{{ item }} </span>
+                                </mat-panel-title>
+                                <mat-panel-description>
+
+                                    <textarea type="search" [(ngModel)]="addControler[item][item + '_ID']" rows="1"
+                                        placeholder="Ex. test_1 2023"
+                                        (blur)="checkTheName(item, 'newItemCPA', addControler[item][item + '_ID'])"
+                                        (click)="pandelCPA.toggle()"></textarea>
+                                    <button mat-button class="rename" (click)="deleteGenerierted(addControler, item)">
+                                        <mat-icon>delete_outline</mat-icon>
+                                    </button>
+
+                                    <mat-error *ngIf="statusSubName[item + '*-*newItemCPA'] == 'type2'">{{
+                                        item
+                                        }} ID is required.</mat-error>
+                                    <mat-error *ngIf="statusSubName[item + '*-*newItemCPA'] == 'type3'">{{
+                                        item
+                                        }} ID is used.</mat-error>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <p *ngFor="let key of getObjectKeys(addControler[item]) | excludeItem:[item + '_ID']"
+                                class="card-line">
+                                <span class="key">{{key}}: </span>
+                                <textarea matInput type="search" rows="1"
+                                    [(ngModel)]="addControler[item][key]"></textarea>
+                                <button mat-button (click)="pandelCPA.toggle()" class="rename"
+                                    (click)="deleteGenerierted(addControler[item], key)">
+                                    <mat-icon>delete_outline</mat-icon>
+                                </button>
+                            </p>
+                            <div>
+                                <u>+ new key and value: </u>
+                                <input type="search" [(ngModel)]="key" class="key"> : <input type="search"
+                                    [(ngModel)]="value">
+                                <button (click)="addAttributes(addControler[item], key, value)">create</button>
+                            </div>
+                            <mat-error *ngIf="createAttrError == 'type2'">key / value required.</mat-error>
+                            <mat-error *ngIf="createAttrError == 'type3'">key is used.</mat-error>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                    <u>+ add new cpa test item</u> :
+                    <input type="search" class="pc-input" [(ngModel)]="currentCpaItemType" [matAutocomplete]="auto">
+                    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                        <mat-option *ngFor="let id of getObjectKeys(defaultCpaData) | excludeItem:['Center Node']"
+                            [value]="id" [disabled]="getItemCpaList().indexOf(id) != -1">
+                            {{ id }}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <button (click)="add('cpa', currentCpaItemType)">create</button>
+                </mat-card-content>
+            </mat-card>
+        </ng-template>
+    </mat-step>
+    <mat-step>
+        <ng-template matStepLabel>Summary: please confirm again.</ng-template>
+        <ng-template matStepContent>
+            <mat-list *ngIf="type=='Experiment'">
+                <div *ngIf="todoSQL['addition']">
+                    <mat-list-item *ngFor="let additionTask of todoSQL['addition']; let i = index;"
+                        (dblclick)="returnTask(additionTask)">
+                        <mat-icon matListItemIcon>add</mat-icon>
+                        <div matListItemTitle *ngIf="additionTask['class'] == 'Versuch'">{{ additionTask['class'] }}: {{
+                            additionTask['info']['Versuche ID'] }}</div>
+                        <div matListItemTitle *ngIf="additionTask['class'] == 'Probe'">{{ additionTask['class'] }}: {{
+                            additionTask['info']['Sample ID'] }}</div>
+                        <div matListItemLine>on {{ additionTask['father']['class'] }}: {{
+                            additionTask['father']['Unique_ID'] }}</div>
+
+                        <div [ngSwitch]="response['addition'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['deletion']['fatherNodes']">
+                    <mat-list-item *ngFor="let deletionTask of todoSQL['deletion']['fatherNodes']; let i = index;"
+                        (dblclick)="returnTask(deletionTask)">
+                        <mat-icon matListItemIcon>delete_outline</mat-icon>
+                        <div matListItemTitle>{{ deletionTask['nodeClass']}}</div>
+                        <div matListItemLine>with unique id: {{ deletionTask['Unique_ID'] }}</div>
+
+                        <div [ngSwitch]="response['deletion']['fatherNodes'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['changeName']">
+                    <mat-list-item *ngFor="let cnTask of todoSQL['changeName']" (dblclick)="returnTask(cnTask)">
+                        <mat-icon matListItemIcon>brightness_low</mat-icon>
+                        <div matListItemTitle>{{ cnTask['class']}}: {{ cnTask['unique_id'] }}</div>
+                        <div matListItemLine>as new name: {{ cnTask['currentName'] }}</div>
+
+                        <div [ngSwitch]="response['changeName'][cnTask['unique_id']]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['changeAttr']">
+                    <mat-list-item *ngFor="let caTask of todoSQL['changeAttr']" (dblclick)="returnTask(caTask)">
+                        <mat-icon matListItemIcon>brightness_low</mat-icon>
+                        <div matListItemTitle>{{ caTask['class']}}: {{ caTask['unique_id'] }}</div>
+                        <div matListItemLine
+                            *ngIf="caTask['attrKey'] != 'PreData_ID' && caTask['attrKey'] != 'PostData_ID'">new {{
+                            caTask['attrKey'] }}: {{ caTask['currentValue'] }}</div>
+                        <div matListItemLine
+                            *ngIf="caTask['attrKey'] == 'PreData_ID' || caTask['attrKey'] == 'PostData_ID'">new {{
+                            caTask['attrKey'] }}:
+                            <button class="menu-button" [matMenuTriggerFor]="menu">click to see {{
+                                caTask['currentValue'].length }} items</button>
+                            <mat-menu #menu="matMenu">
+                                <mat-list-item *ngFor="let item of caTask['currentValue']">{{ item }}</mat-list-item>
+                            </mat-menu>
+                        </div>
+
+                        <div [ngSwitch]="response['changeAttr'][caTask['unique_id']+caTask['attrKey']]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+            </mat-list>
+            <mat-list *ngIf="type=='CPA'">
+                <div *ngIf="todoSQL['addition']">
+                    <mat-list-item *ngFor="let additionTask of todoSQL['addition']; let i = index;"
+                        (dblclick)="returnTask(additionTask)">
+                        <mat-icon matListItemIcon>add</mat-icon>
+                        <div matListItemTitle *ngIf="additionTask['father']">{{ additionTask['class'] }}: {{
+                            additionTask['info'][additionTask['class'] + '_ID'] }}</div>
+                        <div matListItemTitle *ngIf="!additionTask['father']">{{ additionTask['attrKey'] }}: {{
+                            additionTask['attrValue'] }}</div>
+                        <div matListItemLine *ngIf="additionTask['father']">on {{ additionTask['father']['class'] }}: {{
+                            additionTask['father']['Unique_ID'] }}</div>
+                        <div matListItemLine *ngIf="!additionTask['father']">on {{ additionTask['class'] }}: {{
+                            additionTask['unique_id'] }}</div>
+
+                        <div [ngSwitch]="response['addition'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['deletion']['nodeAttributes']">
+                    <mat-list-item *ngFor="let deletionTask of todoSQL['deletion']['nodeAttributes']; let i = index;"
+                        (dblclick)="returnTask(deletionTask)">
+                        <mat-icon matListItemIcon>delete_outline</mat-icon>
+                        <div matListItemTitle>{{ deletionTask['attributeKey']}}</div>
+                        <div matListItemLine>on {{ deletionTask['nodeClass'] }}: {{ deletionTask['Unique_ID'] }}</div>
+
+                        <div [ngSwitch]="response['deletion']['nodeAttributes'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['deletion']['childrenNodes']">
+                    <mat-list-item *ngFor="let deletionTask of todoSQL['deletion']['childrenNodes']; let i = index;"
+                        (dblclick)="returnTask(deletionTask)">
+                        <mat-icon matListItemIcon>delete_outline</mat-icon>
+                        <div matListItemTitle>{{ deletionTask['nodeClass']}}</div>
+                        <div matListItemLine>with unique id: {{ deletionTask['Unique_ID'] }}</div>
+
+                        <div [ngSwitch]="response['deletion']['childrenNodes'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['deletion']['fatherNodes']">
+                    <mat-list-item *ngFor="let deletionTask of todoSQL['deletion']['fatherNodes']; let i = index;"
+                        (dblclick)="returnTask(deletionTask)">
+                        <mat-icon matListItemIcon>delete_outline</mat-icon>
+                        <div matListItemTitle>{{ deletionTask['nodeClass']}}</div>
+                        <div matListItemLine>with unique id: {{ deletionTask['Unique_ID'] }}</div>
+
+                        <div [ngSwitch]="response['deletion']['fatherNodes'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['changeName']">
+                    <mat-list-item *ngFor="let cnTask of todoSQL['changeName']" (dblclick)="returnTask(cnTask)">
+                        <mat-icon matListItemIcon>brightness_low</mat-icon>
+                        <div matListItemTitle>{{ cnTask['class']}}: {{ cnTask['unique_id'] }}</div>
+                        <div matListItemLine>as new name: {{ cnTask['currentName'] }}</div>
+
+                        <div [ngSwitch]="response['changeName'][cnTask['unique_id']]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['changeAttr']">
+                    <mat-list-item *ngFor="let caTask of todoSQL['changeAttr']" (dblclick)="returnTask(caTask)">
+                        <mat-icon matListItemIcon>brightness_low</mat-icon>
+                        <div matListItemTitle>{{ caTask['class']}}: {{ caTask['unique_id'] }}</div>
+                        <div matListItemLine>new {{ caTask['attrKey'] }}: {{ caTask['currentValue'] }}</div>
+
+                        <div [ngSwitch]="response['changeAttr'][caTask['unique_id']+caTask['attrKey']]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+            </mat-list>
+            <mat-list *ngIf="type=='Process'">
+                <div *ngIf="todoSQL['addition']">
+                    <mat-list-item *ngFor="let additionTask of todoSQL['addition']; let i = index;"
+                        (dblclick)="returnTask(additionTask)">
+                        <mat-icon matListItemIcon>add</mat-icon>
+                        <div matListItemTitle>{{ additionTask['attrKey'] }}: {{ additionTask['attrValue'] }}</div>
+                        <div matListItemLine>on {{ additionTask['class'] }}: {{ additionTask['unique_id'] }}</div>
+
+                        <div [ngSwitch]="response['addition'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['deletion']['nodeAttributes']">
+                    <mat-list-item *ngFor="let deletionTask of todoSQL['deletion']['nodeAttributes']; let i = index;"
+                        (dblclick)="returnTask(deletionTask)">
+                        <mat-icon matListItemIcon>delete_outline</mat-icon>
+                        <div matListItemTitle>{{ deletionTask['attributeKey']}}</div>
+                        <div matListItemLine>on {{ deletionTask['nodeClass'] }}: {{ deletionTask['Unique_ID'] }}</div>
+
+                        <div [ngSwitch]="response['deletion']['nodeAttributes'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['deletion']['childrenNodes']">
+                    <mat-list-item *ngFor="let deletionTask of todoSQL['deletion']['childrenNodes']; let i = index;"
+                        (dblclick)="returnTask(deletionTask)">
+                        <mat-icon matListItemIcon>delete_outline</mat-icon>
+                        <div matListItemTitle>{{ deletionTask['nodeClass']}}</div>
+                        <div matListItemLine>with unique id: {{ deletionTask['Unique_ID'] }}</div>
+
+                        <div [ngSwitch]="response['deletion']['childrenNodes'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['changeName']">
+                    <mat-list-item *ngFor="let cnTask of todoSQL['changeName']" (dblclick)="returnTask(cnTask)">
+                        <mat-icon matListItemIcon>brightness_low</mat-icon>
+                        <div matListItemTitle>{{ cnTask['class']}}: {{ cnTask['unique_id'] }}</div>
+                        <div matListItemLine>as new name: {{ cnTask['currentName'] }}</div>
+
+                        <div [ngSwitch]="response['changeName'][cnTask['unique_id']]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['changeAttr']">
+                    <mat-list-item *ngFor="let caTask of todoSQL['changeAttr']" (dblclick)="returnTask(caTask)">
+                        <mat-icon matListItemIcon>brightness_low</mat-icon>
+                        <div matListItemTitle>{{ caTask['class']}}: {{ caTask['unique_id'] }}</div>
+                        <div matListItemLine>new {{ caTask['attrKey'] }}: {{ caTask['currentValue'] }}</div>
+
+                        <div [ngSwitch]="response['changeAttr'][caTask['unique_id']+caTask['attrKey']]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+            </mat-list>
+            <mat-list *ngIf="type == 'PreData' || type == 'PostData'">
+                <div *ngIf="todoSQL['addition']">
+                    <mat-list-item *ngFor="let additionTask of todoSQL['addition']; let i = index;"
+                        (dblclick)="returnTask(additionTask)">
+                        <mat-icon matListItemIcon>add</mat-icon>
+                        <div matListItemTitle>{{ additionTask['attrKey'] }}: {{ additionTask['attrValue'] }}</div>
+                        <div matListItemLine>on {{ additionTask['class'] }}: {{ additionTask['unique_id'] }}</div>
+
+                        <div [ngSwitch]="response['addition'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['deletion']['nodeAttributes']">
+                    <mat-list-item *ngFor="let deletionTask of todoSQL['deletion']['nodeAttributes']; let i = index;"
+                        (dblclick)="returnTask(deletionTask)">
+                        <mat-icon matListItemIcon>delete_outline</mat-icon>
+                        <div matListItemTitle>{{ deletionTask['attributeKey']}}</div>
+                        <div matListItemLine>on {{ deletionTask['nodeClass'] }}: {{ deletionTask['Unique_ID'] }}</div>
+
+                        <div [ngSwitch]="response['deletion']['nodeAttributes'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['deletion']['childrenNodes']">
+                    <mat-list-item *ngFor="let deletionTask of todoSQL['deletion']['childrenNodes']; let i = index;"
+                        (dblclick)="returnTask(deletionTask)">
+                        <mat-icon matListItemIcon>delete_outline</mat-icon>
+                        <div matListItemTitle>{{ deletionTask['nodeClass']}}</div>
+                        <div matListItemLine>with unique id: {{ deletionTask['Unique_ID'] }}</div>
+
+                        <div [ngSwitch]="response['deletion']['childrenNodes'][i]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['changeName']">
+                    <mat-list-item *ngFor="let cnTask of todoSQL['changeName']" (dblclick)="returnTask(cnTask)">
+                        <mat-icon matListItemIcon>brightness_low</mat-icon>
+                        <div matListItemTitle>{{ cnTask['class']}}: {{ cnTask['unique_id'] }}</div>
+                        <div matListItemLine>as new name: {{ cnTask['currentName'] }}</div>
+
+                        <div [ngSwitch]="response['changeName'][cnTask['unique_id']]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+
+                <div *ngIf="todoSQL['changeAttr']">
+                    <mat-list-item *ngFor="let caTask of todoSQL['changeAttr']" (dblclick)="returnTask(caTask)">
+                        <mat-icon matListItemIcon>brightness_low</mat-icon>
+                        <div matListItemTitle>{{ caTask['class']}}: {{ caTask['unique_id'] }}</div>
+                        <div matListItemLine>new {{ caTask['attrKey'] }}: {{ caTask['currentValue'] }}</div>
+
+                        <div [ngSwitch]="response['changeAttr'][caTask['unique_id']+caTask['attrKey']]" matListItemIcon>
+                            <pre *ngSwitchDefault style="margin:0px; color: #1976d2"><mat-icon>history</mat-icon></pre>
+                            <pre *ngSwitchCase="'success'"
+                                style="margin:0px; color: green"><mat-icon>check_circle_outline</mat-icon></pre>
+                            <pre *ngSwitchCase="'error'"
+                                style="margin:0px; color: red"><mat-icon>highlight_off</mat-icon></pre>
+                        </div>
+                    </mat-list-item>
+                </div>
+            </mat-list>
+
+            <div mat-dialog-actions>
+                <button mat-button (click)="undo()" disabled={{undoDisabled}} color="warn">Undo</button>
+                <button mat-button (click)="commit()" color="primary">Commit</button>
+                <button mat-button mat-dialog-close color="warn">Close</button>
+            </div>
+        </ng-template>
+    </mat-step>
+</mat-stepper>

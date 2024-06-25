@@ -1,0 +1,66 @@
+.main {
+    padding-top: 68px;
+    width: 100%;
+    text-align: left;
+}
+
+table{
+    border-collapse: collapse;
+    border-spacing:0px;
+    flex-shrink: 0;
+}
+
+td {
+    text-align: center;
+    border: solid;
+    border-color: black;
+    border-width: 1px;
+    padding: 4px;
+}
+
+td:hover {
+    color: #1976d2;
+}
+
+.maxHighlight {
+    background-color: rgb(237, 186, 168);
+}
+
+.toggle {
+    position: relative;
+    margin-left: 20px;
+    min-height: none;
+}
+
+.colum {
+    display: inline-block;
+    vertical-align: top;
+}
+
+
+.longCell {
+    width: 100px;
+}
+
+.analyse-field {
+    display: flex;
+}
+
+.highlight-row {
+    font-weight: bold;
+}
+
+.colfett{
+    border-right: 2px solid #000; 
+}
+.dobfett{
+    border-right: 2px solid #000; 
+    border-left: 2px solid #000; 
+}
+
+.rowfix {
+    position: sticky;
+    top: 60px;
+    z-index: 100; 
+    border: 2px solid #000;
+}
