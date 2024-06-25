@@ -7,7 +7,7 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./web/dist/frontend_cryo:/usr/share/nginx/html
     ports:
-      - 80:80
+      - 8085:80
     networks:
       - cryoNet
 
